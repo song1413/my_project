@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <!-- Webpage Title -->
+    <title>오늘의 책 | TODAY's BOOK</title>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
+
+    <!-- JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+
+    <!-- 구글폰트 -->
+    <link href="https://fonts.googleapis.com/css?family=Do+Hyeon&display=swap" rel="stylesheet">
+
+    <script type="text/javascript">
+
+        $(function () {
+            $("#search").click(function () {
+                $.ajax({
+                    type: "GET",
+                    url: "https://dapi.kakao.com/v3/search/book?target=title",
+                    data: {jquery: $("bookName").val()},
+                    headers: {Authorization: "kakaoAK 8a66864513180bddba040cc373ab421b"}
+                })
+                    .done(function (msg) {
+                        $("p").append("<strong>" + msg.documents[0].title + "</strong>");
+                        $("p").append("<img src='" + msg.documents[0].thumbnail + "'>");
+                    })
+            })
+        })
+
+        function backSpace() {
+            location.href = "bookAdd2.html"
+        }
+
+    </script>
+
+    <style type="text/css">
+        * {
+            font-family: "Do Hyeon", sans-serif;
+        }
+
+    </style>
+</head>
+
+<body>
+<button onclick="backSpace()" type="button">← 책 등록</button>
+
+<div class="bookSearch">
+<input id="bookName" type="text">
+<button id="search">검색</button>
+<p></p>
+</div>
+
+</body>
+
+</html>
