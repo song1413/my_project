@@ -24,24 +24,49 @@
     <link href="https://fonts.googleapis.com/css?family=Do+Hyeon&display=swap" rel="stylesheet">
 
     <script type="text/javascript">
+        // url 에서 parameter 추출
 
-        $(function () {
-            $("#search").click(function () {
-                $.ajax({
-                    type: "GET",
-                    url: "https://dapi.kakao.com/v3/search/book?target=title",
-                    data: {jquery: $("bookName").val()},
-                    headers: {Authorization: "kakaoAK 8a66864513180bddba040cc373ab421b"}
-                })
-                    .done(function (msg) {
-                        $("p").append("<strong>" + msg.documents[0].title + "</strong>");
-                        $("p").append("<img src='" + msg.documents[0].thumbnail + "'>");
-                    })
+        function getParam(sname) {
+
+            let params = location.search.substr(location.search.indexOf("?") + 1);
+            let sval = "";
+            params = params.split("&");
+            for (let i = 0; i < params.length; i++) {
+                temp = params[i].split("=");
+                if ([temp[0]] == sname) {
+                    sval = temp[1];
+                }
+            }
+            return sval;
+        }
+
+
+        function search() {
+            $.ajax({
+                type: "GET",
+                url: "https://dapi.kakao.com/v3/search/book?target=title&sort=accuracy&page=1&size=50&query=" + getParam(sname),
+                data: {},
+                headers: {Authorization: "KakaoAK 8a66864513180bddba040cc373ab421b"}
             })
-        })
+                .done(function (msg) {
+                    $("#cards-box").empty();
+                    let documents = msg["documents"];
+                    for (let i = 0; i < msg.documents.length; i++) {
+                        let document = documents[i];
+                        makeCard(document.thumbnail, document.title, document.authors, document.publisher, document.datetime, document.isbn);
+
+                    }
+
+                })
+        }
 
         function backSpace() {
-            location.href = "bookAdd2.html"
+            location.href = "bookadd1"
+        }
+
+        function addBook() {
+            $('#addBook').hide();
+
         }
 
     </script>
@@ -56,10 +81,9 @@
 
 <body>
 <button onclick="backSpace()" type="button">← 책 등록</button>
+<button id="addBook" onclick="addBook()" type="button">+ 책장에 추가</button>
 
-<div class="bookSearch">
-<input id="bookName" type="text">
-<button id="search">검색</button>
+
 <p></p>
 </div>
 

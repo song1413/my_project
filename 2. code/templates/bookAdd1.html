@@ -24,41 +24,58 @@
     <link href="https://fonts.googleapis.com/css?family=Do+Hyeon&display=swap" rel="stylesheet">
 
     <script type="text/javascript">
-        $(function () {
-            $("#search").click(function () {
-                $.ajax({
-                    type: "GET",
-                    url: "https://dapi.kakao.com/v3/search/book?target=title&sort=accuracy&page=1&size=50&query=" + $("#bookName").val(),
-                    data: {},
-                    headers: {Authorization: "KakaoAK 8a66864513180bddba040cc373ab421b"}
-                })
-                    .done(function (msg) {
-                        let documents = msg["documents"];
-                        for (let i = 0; i < msg.documents.length; i++) {
-                            let document = documents[i];
-                            makeCard(article["image"], article["url"], article["title"], article["desc"], article["comment"]);
-                        }
+        function search() {
+            $.ajax({
+                type: "GET",
+                url: "https://dapi.kakao.com/v3/search/book?target=title&sort=accuracy&page=1&size=50&query=" + $("#bookName").val(),
+                data: {},
+                headers: {Authorization: "KakaoAK 8a66864513180bddba040cc373ab421b"}
+            })
+                .done(function (msg) {
+                    $("#cards-box").empty();
+                    let documents = msg["documents"];
+                    for (let i = 0; i < msg.documents.length; i++) {
+                        let document = documents[i];
+                        makeCard(document.thumbnail, document.title, document.authors, document.publisher, document.datetime, document.isbn);
+
                     }
 
-                // $("card-img-top").append("<img src='" + msg.documents[i].thumbnail + "'>");
-                // $("p").append("<strong>" + msg.documents[i].title + "</strong>");
-                // $("p").append("<strong>" + msg.documents[i].authors + "</strong>");
-                // $("p").append("<strong>" + msg.documents[i].publisher + "</strong>");
-                // $("p").append("<strong>" + msg.documents[i].datetime + "</strong>");
-            });
+                })
         }
-        })
+
+
+        function makeCard(thumbnail, title, authors, publisher, datetime, isbn) {
+            let tempHtml = `<div class="card" onclick="bookClick(${isbn})">
+                                <img class="card-img-top" src="${thumbnail}" alt="Card image cap">
+                                <div class="card-body">
+                                    <p class="card-title">${title}</p>
+                                    <p class="card-text authors">${authors}</p>
+                                    <p class="card-text publisher">${publisher}</p>
+                                    <p class="card-text datetime">${datetime}</p>
+                                    <p class="card-text isbn" style="display:none">${isbn}</p>
+                                </div>
+                            </div>`;
+            $("#cards-box").append(tempHtml);
+        }
 
         function enterkey() {
             if (window.event.keyCode == 13) {
-                $("#search").click();
+                search();
+                $('#cards-box').show();
             }
         }
 
-
         function backSpace() {
-            location.href = "main.html"
+            location.href = "main"
         }
+
+        function bookClick(isbn) {
+            location.href = "bookadd2?isbn="+isbn
+
+        }
+
+
+
     </script>
 
     <style type="text/css">
@@ -72,21 +89,19 @@
 <body>
 <button onclick="backSpace()" type="button">← 책 추가</button>
 
+
 <div class="bookSearch">
     <input id="bookName" type="text" onkeyup="enterkey()" placeholder="검색어를 입력하세요">
-    <button id="search">검색</button>
-    <p>
-        <div class="card-columns">
-            <div class="card">
-                <img class="card-img-top" id="card-img-top" src="msg.documents[i].thumbnail" alt="Card image cap">
-                <div class="card-body">
-                    <h5 class="card-title">msg.documents[i].title</h5>
-    <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content.
-        This content is a little bit longer.</p>
-</div>
-</div>
+    <button id="search" onclick="search()">검색</button>
 
-</p>
+    <div id="cards-box" class="card-columns" style="display:none">
+        <div class="card">
+            <img class="card-img-top"
+            <div class="card-body">
+                <p class="card-title"></p>
+            </div>
+        </div>
+    </div>
 </div>
 
 </body>
