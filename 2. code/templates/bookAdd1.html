@@ -45,7 +45,7 @@
 
 
         function makeCard(thumbnail, title, authors, publisher, datetime, isbn) {
-            let tempHtml = `<div class="card" onclick="bookClick(${isbn})">
+            let tempHtml = `<div class="card" onclick="bookClick('${isbn}')">
                                 <img class="card-img-top" src="${thumbnail}" alt="Card image cap">
                                 <div class="card-body">
                                     <p class="card-title">${title}</p>
