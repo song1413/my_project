@@ -26,40 +26,31 @@
     <script type="text/javascript">
 
 
-
-
-        function search() {
+        $(function search() {
             $.ajax({
                 type: "GET",
-                url: "https://dapi.kakao.com/v3/search/book?target=title&sort=accuracy&page=1&size=50&query={{isbn}}",
+                url: "https://dapi.kakao.com/v3/search/book?target=isbn&sort=accuracy&page=1&size=50&query={{isbn}}",
                 data: {},
                 headers: {Authorization: "KakaoAK 8a66864513180bddba040cc373ab421b"}
             })
                 .done(function (msg) {
                     $("#cards-box").empty();
                     let documents = msg["documents"];
-                    for (let i = 0; i < msg.documents.length; i++) {
-                        let document = documents[i];
-                        makeCard(document.thumbnail, document.title, document.authors, document.publisher, document.datetime.split('T')[0], document.isbn.split(' ')[0]);
-
-                    }
-
-                })
-        }
-
-        $(function makeCard(thumbnail, title, authors, publisher, datetime, isbn) {
-            let tempHtml = `<div class="card">
-                                <img class="card-img-top" src="${thumbnail}" alt="Card image cap">
+                    let document = documents[0];
+                    let tempHtml = `<div class="card">
+                                <img class="card-img-top" src="document.thumbnail" alt="Card image cap">
                                 <div class="card-body">
-                                    <p class="card-title">${title}</p>
-                                    <p class="card-text authors">${authors}</p>
-                                    <p class="card-text publisher">${publisher}</p>
-                                    <p class="card-text datetime">${datetime}</p>
-                                    <p class="card-text isbn" style="display:none">${isbn}</p>
+                                    <p class="card-title">${document.title}</p>
+                                    <p class="card-text authors">${document.authors}</p>
+                                    <p class="card-text publisher">${document.publisher}</p>
+                                    <p class="card-text datetime">${document.datetime}</p>
+                                    <p class="card-text isbn" style="display:none">${document.isbn}</p>
                                 </div>
                             </div>`;
-            $("#cards-box").append(tempHtml);
+                    $("#cards-box").append(tempHtml);
+                })
         })
+
 
 
         function backSpace() {
@@ -70,7 +61,8 @@
             $('#addBook').hide();
 
         }
-search()
+
+
     </script>
 
     <style type="text/css">
