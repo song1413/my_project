@@ -26,61 +26,40 @@
     <script type="text/javascript">
 
 
-        function getParam(isbn) {  // url 에서 parameter 추출
 
-            let params = location.search.substr(location.search.indexOf("?") + 1);  //params는 주소창에서 ?뒤에 있는 첫번채 값이다
 
-            let sval = ""; //sval값은 비어있는거로 하자
+        function search() {
+            $.ajax({
+                type: "GET",
+                url: "https://dapi.kakao.com/v3/search/book?target=title&sort=accuracy&page=1&size=50&query={{isbn}}",
+                data: {},
+                headers: {Authorization: "KakaoAK 8a66864513180bddba040cc373ab421b"}
+            })
+                .done(function (msg) {
+                    $("#cards-box").empty();
+                    let documents = msg["documents"];
+                    for (let i = 0; i < msg.documents.length; i++) {
+                        let document = documents[i];
+                        makeCard(document.thumbnail, document.title, document.authors, document.publisher, document.datetime.split('T')[0], document.isbn.split(' ')[0]);
 
-            params = params.split("&");  //params는 params값을 &에서 나눈 값이다
+                    }
 
-            for (let i = 0; i < params.length; i++) {
-
-                temp = params[i].split("=");  // temp를 params를 &로 나눈 값에 i번째를 =으로 나눈 값이라고 하자
-
-                if ([temp[0]] == isbn) {  //temp[0]의 값이 sname이랑 같으면 sval값은 temp[1]값과 같다.  temp[0]의 값은 문자 ibsn이다
-                    sval = temp[1];   // sval값은 isbn의 값이다
-                }
-
-            }
-
-            return sval;  //sval값을 추출해라
-
+                })
         }
 
-
-        // function search() {
-        //     $.ajax({
-        //         type: "GET",
-        //         url: "https://dapi.kakao.com/v3/search/book?target=title&sort=accuracy&page=1&size=50&query=" + getParam(isbn),
-        //         data: {},
-        //         headers: {Authorization: "KakaoAK 8a66864513180bddba040cc373ab421b"}
-        //     })
-        //         .done(function (msg) {
-        //             $("#cards-box").empty();
-        //             let documents = msg["documents"];
-        //             for (let i = 0; i < msg.documents.length; i++) {
-        //                 let document = documents[i];
-        //                 makeCard(document.thumbnail, document.title, document.authors, document.publisher, document.datetime, document.isbn);
-        //
-        //             }
-        //
-        //         })
-        // }
-        //
-        // function makeCard(thumbnail, title, authors, publisher, datetime, isbn) {
-        //     let tempHtml = `<div class="card" onclick="bookClick('${isbn}')">
-        //                         <img class="card-img-top" src="${thumbnail}" alt="Card image cap">
-        //                         <div class="card-body">
-        //                             <p class="card-title">${title}</p>
-        //                             <p class="card-text authors">${authors}</p>
-        //                             <p class="card-text publisher">${publisher}</p>
-        //                             <p class="card-text datetime">${datetime}</p>
-        //                             <p class="card-text isbn" style="display:none">${isbn}</p>
-        //                         </div>
-        //                     </div>`;
-        //     $("#cards-box").append(tempHtml);
-        // }
+        $(function makeCard(thumbnail, title, authors, publisher, datetime, isbn) {
+            let tempHtml = `<div class="card">
+                                <img class="card-img-top" src="${thumbnail}" alt="Card image cap">
+                                <div class="card-body">
+                                    <p class="card-title">${title}</p>
+                                    <p class="card-text authors">${authors}</p>
+                                    <p class="card-text publisher">${publisher}</p>
+                                    <p class="card-text datetime">${datetime}</p>
+                                    <p class="card-text isbn" style="display:none">${isbn}</p>
+                                </div>
+                            </div>`;
+            $("#cards-box").append(tempHtml);
+        })
 
 
         function backSpace() {
@@ -91,7 +70,7 @@
             $('#addBook').hide();
 
         }
-
+search()
     </script>
 
     <style type="text/css">
@@ -105,9 +84,10 @@
 <body>
 <button onclick="backSpace()" type="button">← 책 등록</button>
 <button id="addBook" onclick="addBook()" type="button">+ 책장에 추가</button>
+
 <div id="cards-box" class="card-columns" style="display:none">
     <div class="card">
-        <img class="card-img-top"
+        <img class="card-img-top">
         <div class="card-body">
             <p class="card-title"></p>
         </div>

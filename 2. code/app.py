@@ -23,7 +23,9 @@ def bookAdd1():
 
 @app.route('/bookadd2')
 def bookAdd2():
-    return render_template('bookAdd2.html')
+    temp = request.args.get('isbn')
+    return render_template(
+        'bookAdd2.html',isbn=temp)
 
 
 # API 역할을 하는 부분

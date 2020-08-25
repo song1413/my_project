@@ -36,7 +36,7 @@
                     let documents = msg["documents"];
                     for (let i = 0; i < msg.documents.length; i++) {
                         let document = documents[i];
-                        makeCard(document.thumbnail, document.title, document.authors, document.publisher, document.datetime, document.isbn);
+                        makeCard(document.thumbnail, document.title, document.authors, document.publisher, document.datetime.split('T')[0], document.isbn.split(' ')[0]);
 
                     }
 
