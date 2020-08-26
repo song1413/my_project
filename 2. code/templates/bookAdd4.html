@@ -53,29 +53,11 @@
 
 
         function backSpace() {
-            location.href = "bookadd1"
+            location.href = "bookadd2"
         }
 
         function addBook() {
-            // $('#addBook').hide();
-            $.ajax({
-                type: "POST",
-                url: "/booksave",
-                data: {
-                    thumbnail_give: ${document.thumbnail},
-                    title_give: ${document.title},
-                    author_give: ${document.authors},
-                    publisher_give: ${document.publisher},
-                    datetime_give: ${document.datetime.split('T')[0]},
-                    isbn_give: ${document.isbn}
-                },
-                success: function (response) {
-                    if (response["result"] == "success") {
-                        alert(response["msg"]);
-                        window.location.reload();
-                    }
-                }
-            })
+            $('#addBook').show();
 
         }
 
@@ -138,27 +120,23 @@
 </head>
 
 <body>
-<button onclick="backSpace()" type="button">← 책 등록</button>
-<button id="addBook" onclick="addBook()" type="button">+ 책장에 추가</button>
+<button onclick="backSpace()" type="button">← 문구 공유</button>
+<button id="addBook" onclick="addBook()" type="button">등록하기</button>
 
-<div id="cards-box" class="card-columns">
-    <div class="card">
-        <img class="card-img-top">
-        <div class="card-body">
-            <p class="card-title"></p>
-        </div>
+<div>
+    <p></p>
+</div>
+<div>
+    <button id="popOpenBtn" onclick="popup()">책 페이지를 적어주세요</button>
+    <div id="popup_mask"></div>
+    <div id="popupDiv">
+        <h3>책 페이지 입력하기</h3>
+        <input type="text" id="pageWrite" placeholder="####"></input>
+        <button id="popCloseBtn">확인</button>
     </div>
 </div>
 <div>
-    <h2>밑줄</h2>
-    <button id="popOpenBtn" onclick="popup()">'밑줄'은 내가 책에서 발췌한 부분을 저장하는 곳 입니다. 다른 사람들에게 공유가 됩니다. + 공유할 문구를 추가하세요
-    </button>
-    <div id="popup_mask"></div>
-    <div id="popupDiv">
-        <h3>+ 공유할 문구 추가</h3>
-        <button id="save" onclick="save()">T 문구 직접 입력</button>
-        <button id="popCloseBtn">취소</button>
-    </div>
+    <input type="comment" placeholder="공유할 문구를 적어주세요"></input>
 </div>
 </body>
 
