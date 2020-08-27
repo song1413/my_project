@@ -33,10 +33,12 @@ def addBook():
 	# 1. 클라이언트가 준 title, author, review 가져오기.
     thumbnail_receive = request.form['thumbnail_give']
     title_receive = request.form['title_give']
-    authors_receive = request.form['authors_give']
+    authors_receive = request.form['authors_give[]']
     publisher_receive = request.form['publisher_give']
     datetime_receive = request.form['datetime_give']
     isbn_receive = request.form['isbn_give']
+    page_receive = request.form['page_give']
+    write_receive = request.form['write_give']
 
 	# 2. DB에 정보 삽입하기
     book = {
@@ -45,23 +47,25 @@ def addBook():
         'authors': authors_receive,
         'publisher': publisher_receive,
         'datetime': datetime_receive,
-        'isbn': isbn_receive
+        'isbn': isbn_receive,
+        'page': page_receive,
+        'write': write_receive,
     }
 
     # 3. books에 book 저장하기
     db.books.insert_one(book)
 
 	# 4. 성공 여부 & 성공 메시지 반환하기
-    return jsonify({'result': 'success', 'msg': '책장에 등록되었습니다'})
+    return jsonify({'result': 'success'})
 
 @app.route('/booksave', methods=['GET'])
 def read_books():
-    return jsonify({'result': 'success', 'msg': '이 요청은 GET!'})
+    return jsonify({'result': 'success'})
 
 
 @app.route('/bookadd4')
 def bookAdd4():
-    return render_template('bookAdd4.html', )
+    return render_template('bookAdd4.html')
 
 
 

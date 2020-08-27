@@ -70,10 +70,9 @@
         }
 
         function bookClick(isbn) {
-            location.href = "bookadd2?isbn="+isbn
+            location.href = "bookadd2?isbn=" + isbn
 
         }
-
 
 
     </script>
@@ -81,6 +80,16 @@
     <style type="text/css">
         * {
             font-family: "Do Hyeon", sans-serif;
+        }
+
+        .card-img-top {
+            width: 200px;
+            height: auto;
+        }
+
+        .card {
+            width: 300px;
+            height: auto;
         }
 
     </style>
@@ -92,7 +101,6 @@
 
 <div class="bookSearch">
     <input id="bookName" type="text" onkeyup="enterkey()" placeholder="검색어를 입력하세요">
-    <button id="search" onclick="search()">검색</button>
 
     <div id="cards-box" class="card-columns" style="display:none">
         <div class="card">
