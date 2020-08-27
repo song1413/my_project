@@ -25,6 +25,12 @@
 
     <script type="text/javascript">
 
+        let thumbnail = ''
+        let title = ''
+        let authors = ''
+        let publisher = ''
+        let date = ''
+        let isbn = ''
 
         $(function search() {
             $.ajax({
@@ -37,6 +43,12 @@
                     $("#cards-box").empty();
                     let documents = msg["documents"];
                     let document = documents[0];
+                    thumbnail = document.thumbnail
+                    title = document.title
+                    authors = document.authors
+                    publisher = document.publisher
+                    date = document.datetime.split('T')[0]
+                    isbn = document.isbn
                     let tempHtml = `<div class="card">
                                 <img class="card-img-top" src="${document.thumbnail}" alt="Card image cap">
                                 <div class="card-body">
@@ -57,17 +69,17 @@
         }
 
         function addBook() {
-            // $('#addBook').hide();
+            $('#addBook').hide();
             $.ajax({
                 type: "POST",
                 url: "/booksave",
                 data: {
-                    thumbnail_give: ${document.thumbnail},
-                    title_give: ${document.title},
-                    author_give: ${document.authors},
-                    publisher_give: ${document.publisher},
-                    datetime_give: ${document.datetime.split('T')[0]},
-                    isbn_give: ${document.isbn}
+                    thumbnail_give: thumbnail,
+                    title_give: title,
+                    authors_give: authors,
+                    publisher_give: publisher,
+                    datetime_give: date,
+                    isbn_give: isbn
                 },
                 success: function (response) {
                     if (response["result"] == "success") {
@@ -76,7 +88,6 @@
                     }
                 }
             })
-
         }
 
         function save() {
