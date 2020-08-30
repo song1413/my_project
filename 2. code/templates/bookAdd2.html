@@ -31,6 +31,8 @@
         let publisher = ''
         let date = ''
         let isbn = ''
+        let page_give = ''
+        let write_give = ''
 
         $(document).ready(function () {
             $.ajax({
@@ -71,7 +73,6 @@
         function addBook() {
             $('#addBook').hide();
             $('#inputBox').hide();
-            $('#additional').show();
             $.ajax({
                 type: "POST",
                 url: "/booksave",
@@ -88,15 +89,36 @@
                 success: function () {
                     // window.location.reload();
 
+                    let today = new Date();
+                    let year = today.getFullYear(); // 년도
+                    let month = today.getMonth() + 1  // 월. 두자리수
+                    if (month < 10) {
+                        month = "0" + month;
+                    }
+                    let date = today.getDate();  // 날짜. 두자리수
+                    if (date < 10) {
+                        date = "0" + date;
+                    }
+                    let hour = today.getHours();  // 시간. 두자리수
+                    if (hour < 10) {
+                        hour = "0" + hour;
+                    }
+                    let minute = today.getMinutes();  // 분. 두자리수
+                    if (minute < 10) {
+                        minute = "0" + minute;
+                    }
                     let contents = `<div class="card">
                                 <div class="card-body">
                                     <p class="page" height="18">${page_give}</p>
-                                    <p class="time">time</p>
+                                    <p class="time">${year + '-' + month + '-' + date + ' ' + hour + ':' + minute}</p>
                                     <button id="edit">edit</button>
                                     <<p class="write">${write_give}</p>
                                 </div>
                             </div>`;
                     $("#bookBox").append(contents);
+                    $('#additional').show();
+
+
                 }
             })
         }
@@ -116,12 +138,6 @@
             $('#additional').hide();
         }
 
-        // function alert() {
-        //     if (!isCellPhone(num)) {
-        //         alert('네자리 숫자로 입력해 주세요')
-        //         return
-        //     }
-        // }
 
 
     </script>
@@ -165,7 +181,7 @@
 
         <div id="inputBox">
             <h3>책 페이지 입력하기</h3>
-            <input type="text" id="pageWrite" placeholder="####">
+            <input type="text" id="pageWrite" placeholder="####" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');">
 
             <h3>공유할 문구 입력하기</h3>
             <!--        <button id="camera" onclick="camera()">OCR</button>-->
