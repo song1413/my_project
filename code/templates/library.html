@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <!-- Webpage Title -->
+    <title>오늘의 책 | TODAY's BOOK</title>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
+
+    <!-- JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+
+    <!-- 구글폰트 -->
+    <link href="https://fonts.googleapis.com/css?family=Do+Hyeon&display=swap" rel="stylesheet">
+
+    <script type="text/javascript">
+
+        function home() {
+            location.href = "main"
+        }
+
+        function library() {
+            location.href = "library"
+        }
+
+        function addBook() {
+            location.href = "bookadd1"
+        }
+
+        let thumbnail = ''
+        let title = ''
+
+        $(document).ready(function () {
+            $.ajax({
+                type: "POST",
+                url: "/booksave",
+                data: {},
+            })
+                success: function(response) {
+                    $("#cards-box").empty();
+                    let documents = msg["documents"];
+                    let document = documents[0];
+                    thumbnail = document.thumbnail
+                    title = document.title
+                    let tempHtml = `<div class="card">
+                                <img class="card-img-top" src="${document.thumbnail}" alt="Card image cap">
+                                <div class="card-body">
+                                    <p class="card-title" height="18">${document.title}</p>
+                                    <p class="card-text authors">${document.authors}</p>
+                                    <p class="card-text publisher">${document.publisher}</p>
+                                    <p class="card-text datetime">${document.datetime.split('T')[0]}</p>
+                                    <p class="card-text isbn" style="display:none">${document.isbn}</p>
+                                </div>
+                            </div>`;
+                    $("#cards-box").append(tempHtml);
+                })
+        })
+
+
+
+    </script>
+    <style type="text/css">
+        * {
+            font-family: "Do Hyeon", sans-serif;
+        }
+
+        .card-img-top {
+            width: 200px;
+            height: auto;
+        }
+
+        .card {
+            width: 300px;
+            height: auto;
+        }
+
+        header {
+            height: 75px;
+            padding: 1rem;
+            color: white;
+            background: lightcoral;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            /* width: 100% */
+            left: 0;
+            right: 0;
+        }
+
+        body {
+            padding-top: 75px;
+            /* 생략 */
+        }
+
+        #add {
+            position: fixed;
+            bottom: 100px;
+            /* width: 100% */
+            left: 100px;
+        }
+
+        menu {
+            position: fixed;
+            bottom: 0;
+            /* width: 100% */
+        }
+
+    </style>
+</head>
+
+<header>
+    <h1>책장</h1>
+</header>
+<body>
+<div id="cards-box" class="card-columns">
+    <div class="card">
+        <img class="card-img-top">
+        <div class="card-body">
+            <p class="card-title"></p>
+        </div>
+    </div>
+</div>
+<div>
+    <button id="add" onclick="addBook()">+</button>
+</div>
+</body>
+<menu>
+    <button id="home" onclick="home()">home</button>
+    <button id="library" onclick="library()">library</button>
+</menu>
+</html>

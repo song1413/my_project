@@ -107,26 +107,91 @@
                     if (minute < 10) {
                         minute = "0" + minute;
                     }
+                    let page_give = $('#pageWrite').val();
+                    let write_give = $('#write').val();
+
                     let contents = `<div class="card">
                                 <div class="card-body">
-                                    <p class="page" height="18">${page_give}</p>
+                                    <p class="page" height="18">${'p. ' + page_give}</p>
                                     <p class="time">${year + '-' + month + '-' + date + ' ' + hour + ':' + minute}</p>
-                                    <button id="edit">edit</button>
-                                    <<p class="write">${write_give}</p>
+                                    <button id="edit" onclick="editPost()">edit</button>
+                                    <p class="write">${write_give}</p>
                                 </div>
+                            </div>
+                            <div id="buttonBox">
+                                <button id="additional" onclick="additional()" style="display:none;">추가하기</button>
                             </div>`;
                     $("#bookBox").append(contents);
                     $('#additional').show();
-
-
                 }
             })
         }
 
+        // 수정 버튼을 누르면 editPost 함수가 호출된다.
+        // 어떤 메모인지 알기 위해 id 전달 받는다.
+        function editPost(_id) {
+            // id 일치하는 메모에 수정 입력칸을 보여준다.
+            showEdits(_id);
+            // 기존 메모 내용을 가져온다.
+            let page = $(`#${_id}page`).text();
+            // 수정 입력 칸에 기존 메모 내용을 넣어둔다.
+            $(`#${_id}-textarea`).val(contents);
+        }
+
+        function showEdits(_id) {
+            // 수정 입력 칸, 수정완료 버튼, 취소 버튼을 보여준다.
+            $(`#${_id}-textarea`).show();
+            $(`#${_id}-submit`).show();
+            $(`#${_id}-cancel`).show();
+
+            // 메모 내용, 수정 버튼을 숨긴다.
+            $(`#${_id}-contents`).hide();
+            $(`#${_id}-edit`).hide();
+        }
+
+        // 취소 버튼을 누르면 hideEdits 함수가 호출된다.
+        // 어떤 메모인지 알기 위해 username 전달 받는다.
+        function hideEdits(id) {
+            // 수정 입력 칸, 수정완료 버튼, 취소 버튼을 숨긴다.
+            $(`#${_id}-textarea`).hide();
+            $(`#${_id}-submit`).hide();
+            $(`#${_id}-cancel`).hide();
+
+            // 메모 내용, 수정 버튼을 보여준다.
+            $(`#${_id}-contents`).show();
+            $(`#${_id}-edit`).show();
+        }
+
+        // 수정완료 버튼을 누르면 submitEdit 함수가 호출된다.
+        // 어떤 메모인지 알기 위해 username 전달 받는다.
+        function submitEdit(_id) {
+            // 수정된 메모 내용을 가져오고 올바른지 검사한다.
+            let contents = $(`#${_id}-textarea`).val();
+            if (isValidContents(contents) == false) {
+                return;
+            }
+
+            // 메모 내용 수정을 서버에 요청한다.
+            $.ajax({
+                type: "POST",
+                url: "/message/edit",
+                data: {id_give: id, contents_give: contents},
+                success: function (response) {
+                    if (response['result'] == 'success') {
+                        alert(response['msg']);
+                        // 변경된 메모를 보기 위해 창을 새로고침한다.
+                        window.location.reload();
+                    } else {
+                        alert('메시지 변경에 실패했습니다.');
+                    }
+                }
+            });
+        }
+
+
         // function camera() {
         //     location.href = ""
         // }
-
         function write() {
             location.href = "bookadd4"
         }
@@ -137,11 +202,7 @@
             $('#bookBox').show();
             $('#additional').hide();
         }
-
-
-
     </script>
-
     <style type="text/css">
         * {
             font-family: "Do Hyeon", sans-serif;
@@ -156,14 +217,12 @@
             width: 300px;
             height: auto;
         }
-
     </style>
-</head>
 
+</head>
 <body>
 <button onclick="backSpace()" type="button">← 책 등록</button>
 <button id="addBook" onclick="addBook()" type="button">+ 책장에 추가</button>
-
 <div id="cards-box" class="card-columns">
     <div class="card">
         <img class="card-img-top">
@@ -178,21 +237,14 @@
     <div id="bookBox">
         <div class="card" style="display: none">
         </div>
-
         <div id="inputBox">
             <h3>책 페이지 입력하기</h3>
             <input type="text" id="pageWrite" placeholder="####" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');">
-
             <h3>공유할 문구 입력하기</h3>
             <!--        <button id="camera" onclick="camera()">OCR</button>-->
             <input type="text" id="write" placeholder="문구 직접 입력">
         </div>
-
-        <div id="buttonBox">
-            <button id="additional" onclick="additional()" style="display:none;">추가하기</button>
-        </div>
     </div>
 </div>
 </body>
-
 </html>
