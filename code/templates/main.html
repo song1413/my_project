@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css"/>
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
     <style type="text/css">
+
         html {
             background-color: #010048;
         }
@@ -29,6 +30,15 @@
     </style>
     <script>
 
+        function copy() {
+
+        }
+
+
+        function search() {
+            location.href = "bookadd1"
+        }
+
 
     </script>
 </head>
@@ -37,7 +47,8 @@
     <div class="book-title">
         <div class="book-page">
             <div class="book-contents">
-                <input type="image" name="button" src="" onclick="copy()">
+                <button type="image" name="button" src="" onclick="copy()">copy</button>
+                <button id="search" onclick="search()">menu</button>
             </div>
         </div>
 

@@ -37,7 +37,8 @@ def library():
     # 1. mongodb에서 모든 데이터 조회해오기 (read)
     result = list(db.articles.find({}))
     # 2. articles라는 키 값으로 article 정보 보내주기
-    return render_template('library.html')
+    return jsonify({'result': 'success', 'article' : result})
+    # return render_template('library.html')
 
 
 

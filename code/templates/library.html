@@ -39,11 +39,12 @@
 
         $(document).ready(function () {
             $.ajax({
-                type: "POST",
+                type: "GET",
                 url: "/booksave",
                 data: {},
                 success: function(response) {
-                    let thumbnail = document.thumbnail
+                    let books = response["books"]
+
                     title = document.title
                     let tempHtml = `<div class="card">
                                 <img class="card-img-top" src="${document.thumbnail}" alt="Card image cap">
