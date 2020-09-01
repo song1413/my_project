@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 
 from flask import Flask, render_template, jsonify, request
-
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -35,10 +35,11 @@ def bookAdd2():
 @app.route('/library', methods=['GET'])
 def library():
     # 1. mongodb에서 모든 데이터 조회해오기 (read)
-    result = list(db.articles.find({}))
-    # 2. articles라는 키 값으로 article 정보 보내주기
-    return jsonify({'result': 'success', 'article' : result})
-    # return render_template('library.html')
+    result = list(db.books.find({}, {'_id': 0}))
+    # 2. isbn라는 키 값으로 books 정보 보내주기
+    return jsonify({'result': 'success', 'books' : result})
+    return render_template('library.html')
+
 
 
 
@@ -54,6 +55,8 @@ def addBook():
     isbn_receive = request.form['isbn_give']
     page_receive = request.form['page_give']
     write_receive = request.form['write_give']
+    key_receive = datetime.today().strftime("%Y%m%d%H%M%S")
+
 
     # 2. DB에 정보 삽입하기
     book = {
@@ -65,6 +68,7 @@ def addBook():
         'isbn': isbn_receive,
         'page': page_receive,
         'write': write_receive,
+        'key': key_receive,
     }
 
     # 3. books에 book 저장하기

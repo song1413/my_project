@@ -31,8 +31,6 @@
         let publisher = ''
         let date = ''
         let isbn = ''
-        let page_give = ''
-        let write_give = ''
 
         $(document).ready(function () {
             $.ajax({
@@ -128,45 +126,45 @@
         }
 
         // 수정 버튼을 누르면 editPost 함수가 호출된다.
-        // 어떤 메모인지 알기 위해 id 전달 받는다.
-        function editPost(_id) {
+        // 어떤 메모인지 알기 위해 key 전달 받는다.
+        function editPost(key) {
             // id 일치하는 메모에 수정 입력칸을 보여준다.
-            showEdits(_id);
+            showEdits(key_id);
             // 기존 메모 내용을 가져온다.
-            let page = $(`#${_id}page`).text();
+            let page = $(`#${key}page`).text();
             // 수정 입력 칸에 기존 메모 내용을 넣어둔다.
-            $(`#${_id}-textarea`).val(contents);
+            $(`#${key}-textarea`).val(contents);
         }
 
-        function showEdits(_id) {
+        function showEdits(key) {
             // 수정 입력 칸, 수정완료 버튼, 취소 버튼을 보여준다.
-            $(`#${_id}-textarea`).show();
-            $(`#${_id}-submit`).show();
-            $(`#${_id}-cancel`).show();
+            $(`#${key}-textarea`).show();
+            $(`#${key}-submit`).show();
+            $(`#${key}-cancel`).show();
 
             // 메모 내용, 수정 버튼을 숨긴다.
-            $(`#${_id}-contents`).hide();
-            $(`#${_id}-edit`).hide();
+            $(`#${key}-contents`).hide();
+            $(`#${key}-edit`).hide();
         }
 
         // 취소 버튼을 누르면 hideEdits 함수가 호출된다.
         // 어떤 메모인지 알기 위해 username 전달 받는다.
         function hideEdits(id) {
             // 수정 입력 칸, 수정완료 버튼, 취소 버튼을 숨긴다.
-            $(`#${_id}-textarea`).hide();
-            $(`#${_id}-submit`).hide();
-            $(`#${_id}-cancel`).hide();
+            $(`#${key}-textarea`).hide();
+            $(`#${key}-submit`).hide();
+            $(`#${key}-cancel`).hide();
 
             // 메모 내용, 수정 버튼을 보여준다.
-            $(`#${_id}-contents`).show();
-            $(`#${_id}-edit`).show();
+            $(`#${key}-contents`).show();
+            $(`#${key}-edit`).show();
         }
 
         // 수정완료 버튼을 누르면 submitEdit 함수가 호출된다.
         // 어떤 메모인지 알기 위해 username 전달 받는다.
-        function submitEdit(_id) {
+        function submitEdit(key) {
             // 수정된 메모 내용을 가져오고 올바른지 검사한다.
-            let contents = $(`#${_id}-textarea`).val();
+            let contents = $(`#${key}-textarea`).val();
             if (isValidContents(contents) == false) {
                 return;
             }

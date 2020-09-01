@@ -43,62 +43,24 @@
                 url: "/booksave",
                 data: {},
                 success: function (response) {
-
-                    let temp_html = ` < div class= "card" >
-                        < img class = "card-img-top" src = "${image}" alt = "Card image cap" >
-                        < div class = "card-body" >
-                        < a href = "${url}"
-                    target = "_blank"
-                class
-                    = "card-title" >${title} < /a>
-                        < p
-                class
-                    = "card-text" >${desc} < /p>
-                        < p
-                class
-                    = "card-text comment" >${comment} < /p>
-                        < /div>
-                        < /div>`;
-                    $("#cards-box").append(temp_html);
+                    let books = response["books"];
+                    for (let i = 0; i < books.length; i++) {
+                        makeCard(books[i]["thumbnail"], books[i]["isbn"])
+                    }
                 }
-
-                    ```
-
-
-                    title = document.title
-                    let tempHtml = ` < div
-                class
-                = "card" >
-                < img
-        class
-            = "card-img-top"
-            src = "${document.thumbnail}"
-            alt = "Card image cap" >
-                < div
-        class
-            = "card-body" >
-                < p
-        class
-            = "card-title"
-            height = "18" >${document.title} < /p>
-                < p
-        class
-            = "card-text authors" >${document.authors} < /p>
-                < p
-        class
-            = "card-text publisher" >${document.publisher} < /p>
-                < p
-        class
-            = "card-text datetime" >${document.datetime.split('T')[0]} < /p>
-                < p
-        class
-            = "card-text isbn"
-            style = "display:none" >${document.isbn} < /p>
-                < /div>
-                < /div>`;
-            $("#cards-box").append(tempHtml);
+            })
         })
-        })
+
+        function makeCard(thumbnail, isbn) {
+            let temp_html = `<div class="card">
+                        <img class="card-img-top" src="${thumbnail}" alt="Card image cap">
+                        <div class="card-body">
+                        <p class="card-text isbn" style="display:block">${isbn}</p>
+                        </div>
+                    </div>`;
+            $("#cards-box").append(temp_html);
+        }
+
 
 
     </script>
