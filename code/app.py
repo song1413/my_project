@@ -41,9 +41,6 @@ def library():
 
 
 
-
-
-
 ## API 역할을 하는 부분
 @app.route('/booksave', methods=['POST'])
 def addBook():
