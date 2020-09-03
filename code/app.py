@@ -2,6 +2,8 @@ from pymongo import MongoClient
 
 from flask import Flask, render_template, jsonify, request
 from datetime import datetime
+import schedule
+import time
 
 app = Flask(__name__)
 
@@ -34,10 +36,6 @@ def bookAdd2():
 
 @app.route('/library', methods=['GET'])
 def library():
-    # 1. mongodb에서 모든 데이터 조회해오기 (read)
-    result = list(db.books.find({}, {'_id': 0}))
-    # 2. isbn라는 키 값으로 books 정보 보내주기
-    return jsonify({'result': 'success', 'books' : result})
     return render_template('library.html')
 
 
@@ -54,7 +52,7 @@ def addBook():
     datetime_receive = request.form['datetime_give']
     isbn_receive = request.form['isbn_give']
     page_receive = request.form['page_give']
-    write_receive = request.form['write_give']
+    contents_receive = request.form['contents_give']
     key_receive = datetime.today().strftime("%Y%m%d%H%M%S")
 
 
@@ -67,7 +65,7 @@ def addBook():
         'datetime': datetime_receive,
         'isbn': isbn_receive,
         'page': page_receive,
-        'write': write_receive,
+        'contents': contents_receive,
         'key': key_receive,
     }
 
@@ -79,27 +77,42 @@ def addBook():
     return jsonify({'result': 'success'})
 
 
-# @app.route('/booksave/edit', methods=["POST"])
-# def edit_booksave():
-#     ObjectID(post_id) = request.form['_id']
-#     page_receive = request.form['page_give']
-#     write_receive = request.form['write_give']
-#
-# 		# id 기준으로 메시지를 찾아 내용과 생성 시각을 업데이트합니다.
-#     db.messages.update_one({'_id': ObjectID(post_id)}, {'$set': {'page': page_receive, 'write': write_receive}})
 
-    #
-    # return jsonify({'result': 'success', 'msg': '메시지 변경에 성공하였습니다!'})
+@app.route('/booksave/edit', methods=["POST"])
+def edit_booksave():
+    key_receive = request.form['key_give']
+    page_receive = request.form['page_give']
+    contents_receive = request.form['contents_give']
+
+	# key 기준으로 메시지를 찾아 내용과 생성 시각을 업데이트합니다.
+    db.books.update_one({'key': key_receive}, {'$set': {'page': page_receive, 'contents': contents_receive}})
+
+    return jsonify({'result': 'success', 'msg': '메시지 변경에 성공하였습니다!'})
+
 
 
 @app.route('/booksave', methods=['GET'])
 def read_books():
-    return jsonify({'result': 'success'})
+    # 1. mongodb에서 모든 데이터 조회해오기 (read)
+    result = list(db.books.find({}, {'_id': 0}))
+    return jsonify({'result': 'success', 'books':result})
+
 
 
 @app.route('/bookadd4')
 def bookAdd4():
     return render_template('bookAdd4.html')
+
+
+# def job():
+#     result = list(db.books.find({}, {'_id': 0}))
+#
+# schedule.every().day.at("00:00").do(job)
+#
+# while True:
+#     schedule.run_pending()
+#     time.sleep(1)
+
 
 
 if __name__ == '__main__':

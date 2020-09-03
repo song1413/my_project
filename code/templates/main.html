@@ -40,17 +40,42 @@
         }
 
 
+        $(document).ready(function () {
+            getMessages();
+
+
+            $.ajax({
+                type: "GET",
+                url: "/booksave",
+                data: {},
+                success: function (response) {
+                    let book = response["books"];
+                    for (let i = 0; i < book.length; i++) {
+                        makeCard(book[i]["title"], book[i]["page"], book[i]["write"])
+                    }
+                }
+            })
+        })
+
+
     </script>
 </head>
 <body>
 <div class="wrap">
-    <div class="book-title">
-        <div class="book-page">
-            <div class="book-contents">
-                <button type="image" name="button" src="" onclick="copy()">copy</button>
-                <button id="search" onclick="library()">menu</button>
-            </div>
-        </div>
+    <div id="book-title">
+        ${title}
+    </div>
+    <div id="book-page">
+        ${page}
+    </div>
+    <div id="book-contents">
+        ${write}
+    </div>
+    <div class="menu">
+        <button type="image" name="button" src="" onclick="copy()">copy</button>
+        <button id="search" onclick="library()">menu</button>
+    </div>
+</div>
 
 </body>
 </html>

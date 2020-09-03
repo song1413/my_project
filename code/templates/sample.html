@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>스파르타코딩클럽 | 새가 날아든다</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script>
+
+        $(document).ready(function () {
+            getMessages();
+        })
+
+        function getMessages() {
+            $('#cards-box').empty();
+            $.ajax({
+                type: "GET",
+                url: "/message",
+                data: {},
+                success: function (response) {
+                    if (response['result'] == 'success') {
+                        let messages = response['messages'];
+                        for (let i = 0; i < messages.length; i++) {
+                            let message = messages[i];
+                            let username = message['username'];
+                            let contents = message['contents'];
+                            let created_at = message['created_at'];
+                            addHTML(username, contents, created_at, i);
+                        }
+                    } else {
+                        alert('메시지를 불러오는데 실패했습니다.');
+                    }
+                }
+            });
+        }
+
+        function addHTML(username, contents, created_at, i) {
+            let tempHtml = makeMessage(username, contents, created_at);
+            $('#cards-box').append(tempHtml);
+        }
+
+        function makeMessage(username, contents, created_at, i) {
+            return `<div class="card custom-card">
+                        <div class="card-body">
+                            <textarea id="${username}-textarea" class="area-edit" cols="80"></textarea>
+                            <h5 id="${username}-contents" class="card-title">${contents}</h5>
+                            <h6 id="${username}-username"class="card-subtitle mb-2 text-muted">${username}</h6>
+                            <h6 class="card-subtitle mb-2 text-muted">${created_at}</h6>
+                        </div>
+                        <footer class="card-footer">
+                            <a id="${username}-edit" href="#" class="card-footer-item" onclick="editPost('${username}')">수정</a>
+                            <a id="${username}-cancel" href="#" class="card-footer-item area-edit" onclick="hideEdits('${username}')">취소</a>
+                            <a id="${username}-submit" href="#" class="card-footer-item area-edit" onclick="submitEdit('${username}')">수정완료</a>
+                        </footer>
+                    </div>`;
+        }
+
+        function isValidContents(contents) {
+            if (contents == '') {
+                alert('내용을 입력해주세요');
+                return false;
+            }
+            if (contents.trim().length > 140) {
+                alert('공백 포함 140자 이하로 입력해주세요');
+                return false;
+            }
+            return true;
+        }
+
+        function genRandomName(length) {
+            let result = '';
+            let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let charactersLength = characters.length;
+            for (let i = 0; i < length; i++) {
+                let number = Math.random() * charactersLength;
+                let index = Math.floor(number);
+                result += characters.charAt(index);
+            }
+            return result;
+        }
+
+        function writePost() {
+            let contents = $('#contents').val();
+
+            if (isValidContents(contents) == false) {
+                return;
+            }
+
+            let username = genRandomName(10);
+
+            $.ajax({
+                type: "POST",
+                url: "/message",
+                data: { 'username_give': username, 'contents_give': contents },
+                success: function (response) {
+                    if (response['result'] == 'success') {
+                        alert(response['msg']);
+                        window.location.reload();
+                    }
+                }
+            });
+        }
+
+        function openclose() {
+            let status = $('#post-box').css('display');
+            if (status == 'block') {
+                $('#post-box').hide();
+            } else {
+                $('#post-box').show();
+            }
+        }
+
+        function editPost(username) {
+            showEdits(username);
+            let contents = $(`#${username}-contents`).text();
+            $(`#${username}-textarea`).val(contents);
+        }
+
+        function showEdits(username) {
+            $(`#${username}-textarea`).show();
+            $(`#${username}-submit`).show();
+            $(`#${username}-cancel`).show();
+
+            $(`#${username}-contents`).hide();
+            $(`#${username}-edit`).hide();
+        }
+
+        function hideEdits(username) {
+            $(`#${username}-textarea`).hide();
+            $(`#${username}-submit`).hide();
+            $(`#${username}-cancel`).hide();
+
+            $(`#${username}-contents`).show();
+            $(`#${username}-edit`).show();
+        }
+
+        function submitEdit(username) {
+            let contents = $(`#${username}-textarea`).val();
+            if (isValidContents(contents) == false) {
+                return;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "/message/edit",
+                data: { username_give: username, contents_give: contents },
+                success: function (response) {
+                    if (response['result'] == 'success') {
+                        alert(response['msg']);
+                        window.location.reload();
+                    } else {
+                        alert('메시지 변경에 실패했습니다.');
+                    }
+                }
+            });
+        }
+    </script>
+
+    <style>
+        .area-edit {
+            display: none;
+        }
+
+        .wrap {
+            width: 700px;
+            margin: 10px auto;
+        }
+
+        #contents {
+            width: 700px;
+        }
+
+        .area-write {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .custom-card {
+            margin: 20px 0 20px 0;
+        }
+
+        #post-box {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <div class="header">
+            <h1>새가 날아든다</h1>
+            <p>
+                <button onclick="openclose()" type="button" class="btn btn-outline-info btn-sm">공유하고 싶은 소식</button>을
+                입력해주세요.
+                24시간이 지난 뒤에는 사라집니다.
+            </p>
+        </div>
+        <div id="post-box">
+            <div class="area-write">
+                <textarea placeholder="공유하고 싶은 소식을 입력해주세요" name="contents" id="contents" cols="30" rows="10"></textarea>
+                <button class="btn btn-danger" onclick="writePost()">작성하기</button>
+            </div>
+        </div>
+        <div id="cards-box" class="area-read">
+            <div class="card">
+                <header class="card-header">
+                    <p class="card-header-title">
+                        Component
+                    </p>
+                    <a href="#" class="card-header-icon" aria-label="more options">
+                        <span class="icon">
+                            <i class="fas fa-angle-down" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                </header>
+                <div class="card-content">
+                    <div class="content">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec iaculis mauris.
+                        <a href="#">@bulmaio</a>. <a href="#">#css</a> <a href="#">#responsive</a>
+                        <br>
+                        <time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time>
+                    </div>
+                </div>
+                <footer class="card-footer">
+                    <a href="#" class="card-footer-item">Save</a>
+                    <a href="#" class="card-footer-item">Edit</a>
+                    <a href="#" class="card-footer-item">Delete</a>
+                </footer>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

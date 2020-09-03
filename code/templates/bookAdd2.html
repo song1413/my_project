@@ -31,6 +31,7 @@
         let publisher = ''
         let date = ''
         let isbn = ''
+        let key = ''
 
         $(document).ready(function () {
             $.ajax({
@@ -82,7 +83,7 @@
                     datetime_give: date,
                     isbn_give: isbn,
                     page_give: $('#pageWrite').val(),
-                    write_give: $('#write').val(),
+                    contents_give: $('#contents').val(),
                 },
                 success: function () {
                     // window.location.reload();
@@ -106,18 +107,21 @@
                         minute = "0" + minute;
                     }
                     let page_give = $('#pageWrite').val();
-                    let write_give = $('#write').val();
+                    let contents_give = $('#contents').val();
 
                     let contents = `<div class="card">
                                 <div class="card-body">
-                                    <p class="page" height="18">${'p. ' + page_give}</p>
+                                    <p class="page-edit" id="${key}-pageEdit"></p>
+                                    <p class="page" id="${key}-page" height="18>">${'p. ' + page_give}</p>
                                     <p class="time">${year + '-' + month + '-' + date + ' ' + hour + ':' + minute}</p>
-                                    <button id="edit" onclick="editPost()">edit</button>
-                                    <p class="write">${write_give}</p>
+                                    <button id="${key}-edit" href="#" class="card-footer-item" onclick="editPost('${key}')">수정</button>
+                                    <textarea class="contents-edit" id="${key}-contentsEdit" cols="80" style="display:none;"></textarea>
+                                    <p class="contents" id="${key}-contents">${contents_give}</p>
                                 </div>
-                            </div>
-                            <div id="buttonBox">
-                                <button id="additional" onclick="additional()" style="display:none;">추가하기</button>
+                                <footer class="card-footer">
+                                     <a id="${key}-cancel" href="#" class="card-footer-item area-edit" onclick="hideEdits('${key}')" style="display: none">취소</a>
+                                     <a id="${key}-submit" href="#" class="card-footer-item area-edit" onclick="submitEdit('${key}')" style="display: none">수정완료</a>
+                                </footer>
                             </div>`;
                     $("#bookBox").append(contents);
                     $('#additional').show();
@@ -129,51 +133,56 @@
         // 어떤 메모인지 알기 위해 key 전달 받는다.
         function editPost(key) {
             // id 일치하는 메모에 수정 입력칸을 보여준다.
-            showEdits(key_id);
+            showEdits(key);
             // 기존 메모 내용을 가져온다.
-            let page = $(`#${key}page`).text();
+            let page = $(`#${key}-page`).input();
+            let contents = $(`#${key}-contents`).text();
             // 수정 입력 칸에 기존 메모 내용을 넣어둔다.
-            $(`#${key}-textarea`).val(contents);
+            $(`#${key}-pageEdit`).val(page);
+            $(`#${key}-contentsEdit`).val(contents);
         }
 
         function showEdits(key) {
             // 수정 입력 칸, 수정완료 버튼, 취소 버튼을 보여준다.
-            $(`#${key}-textarea`).show();
+            $(`#${key}-pageEdit`).show();
+            $(`#${key}-contentsEdit`).show();
             $(`#${key}-submit`).show();
             $(`#${key}-cancel`).show();
 
             // 메모 내용, 수정 버튼을 숨긴다.
+            $(`#${key}-page`).hide();
             $(`#${key}-contents`).hide();
             $(`#${key}-edit`).hide();
         }
 
         // 취소 버튼을 누르면 hideEdits 함수가 호출된다.
-        // 어떤 메모인지 알기 위해 username 전달 받는다.
-        function hideEdits(id) {
+        // 어떤 메모인지 알기 위해 key 전달 받는다.
+        function hideEdits(key) {
             // 수정 입력 칸, 수정완료 버튼, 취소 버튼을 숨긴다.
-            $(`#${key}-textarea`).hide();
+            $(`#${key}-contentsEdit`).hide();
+            $(`#${key}-pageEdit`).hide();
             $(`#${key}-submit`).hide();
             $(`#${key}-cancel`).hide();
 
             // 메모 내용, 수정 버튼을 보여준다.
+            $(`#${key}-page`).show();
             $(`#${key}-contents`).show();
             $(`#${key}-edit`).show();
         }
 
         // 수정완료 버튼을 누르면 submitEdit 함수가 호출된다.
-        // 어떤 메모인지 알기 위해 username 전달 받는다.
+        // 어떤 메모인지 알기 위해 key 전달 받는다.
         function submitEdit(key) {
-            // 수정된 메모 내용을 가져오고 올바른지 검사한다.
-            let contents = $(`#${key}-textarea`).val();
-            if (isValidContents(contents) == false) {
-                return;
-            }
+            // 수정된 메모 내용을 가져온다.
+            $(`#${key}-contentsEdit`).val();
+            $(`#${key}-pageEdit`).val();
+
 
             // 메모 내용 수정을 서버에 요청한다.
             $.ajax({
                 type: "POST",
-                url: "/message/edit",
-                data: {id_give: id, contents_give: contents},
+                url: "/booksave/edit",
+                data: {key_give: key, page_give: pageEdit, contents_give: contentsEdit},
                 success: function (response) {
                     if (response['result'] == 'success') {
                         alert(response['msg']);
@@ -190,13 +199,16 @@
         // function camera() {
         //     location.href = ""
         // }
-        function write() {
+
+
+        function contents() {
             location.href = "bookadd4"
         }
 
         function additional() {
             $('#addBook').show();
             $('#inputBox').show();
+            $('#inputBox').empty();
             $('#bookBox').show();
             $('#additional').hide();
         }
@@ -240,9 +252,13 @@
             <input type="text" id="pageWrite" placeholder="####" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');">
             <h3>공유할 문구 입력하기</h3>
             <!--        <button id="camera" onclick="camera()">OCR</button>-->
-            <input type="text" id="write" placeholder="문구 직접 입력">
+            <textarea type="text" id="contents" placeholder="문구 직접 입력"></textarea>
+        </div>
+        <div id="button-box">
+            <button id="additional" onclick="additional()" style="display:none;">추가하기</button>
         </div>
     </div>
+</div>
 </div>
 </body>
 </html>

@@ -53,7 +53,7 @@
 
         function makeCard(thumbnail, isbn) {
             let temp_html = `<div class="card">
-                        <img class="card-img-top" src="${thumbnail}" alt="Card image cap">
+                        <img class="card-img-top" src="${thumbnail}" alt="Card image cap" onclick="location.href='/bookadd2?isbn=${isbn}'">
                         <div class="card-body">
                         <p class="card-text isbn" style="display:block">${isbn}</p>
                         </div>
@@ -119,6 +119,7 @@
 <header>
     <h1>책장</h1>
 </header>
+
 <body>
 <div id="cards-box" class="card-columns">
     <div class="card">
