@@ -40,39 +40,47 @@
         }
 
 
-        $(document).ready(function () {
-            getMessages();
-
-
+        $(document).ready(function ({i}) {
+            $('#book-title').empty();
+            $('#book-page').empty();
+            $('#book-contents').empty();
             $.ajax({
                 type: "GET",
-                url: "/booksave",
+                url: "/print",
                 data: {},
                 success: function (response) {
                     let book = response["books"];
-                    for (let i = 0; i < book.length; i++) {
-                        makeCard(book[i]["title"], book[i]["page"], book[i]["write"])
-                    }
+                    makeCard(book[{i}]["title"], book[{i}]["page"], book[{i}]["contents"])
                 }
             })
         })
 
+
+        function makeCard(title, page, contents) {
+            $('#book-title').append(title);
+            $('#book-page').append(page);
+            $('#book-contents').append(contents);
+        }
+
+
+        function copyText() {
+            $('#book-contents').select();
+                document.execCommand("copy");
+                alert('복사되었습니다')
+        }
 
     </script>
 </head>
 <body>
 <div class="wrap">
     <div id="book-title">
-        ${title}
     </div>
     <div id="book-page">
-        ${page}
     </div>
     <div id="book-contents">
-        ${write}
     </div>
     <div class="menu">
-        <button type="image" name="button" src="" onclick="copy()">copy</button>
+        <button type="image" id="copy" src="" onclick="copyText()">copy</button>
         <button id="search" onclick="library()">menu</button>
     </div>
 </div>

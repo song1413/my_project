@@ -5,6 +5,7 @@ from datetime import datetime
 import schedule
 import time
 
+
 app = Flask(__name__)
 
 client = MongoClient('localhost', 27017)
@@ -38,6 +39,9 @@ def bookAdd2():
 def library():
     return render_template('library.html')
 
+
+
+
 ## API 역할을 하는 부분
 @app.route('/booksave', methods=['POST'])
 def addBook():
@@ -52,55 +56,38 @@ def addBook():
     contents_receive = request.form['contents_give']
     key_receive = datetime.today().strftime("%Y%m%d%H%M%S")
 
-    sentence = {'page': page_receive, 'content': contents_receive, 'key': key_receive, 'created_at': datetime.now()}
 
     # 2. DB에 정보 삽입하기
-    insert_book = {
+    book = {
         'thumbnail': thumbnail_receive,
         'title': title_receive,
         'authors': authors_receive,
         'publisher': publisher_receive,
         'datetime': datetime_receive,
         'isbn': isbn_receive,
-        'sentences': sentence,
-        'created_at': datetime.now()
+        'page': page_receive,
+        'contents': contents_receive,
+        'key': key_receive,
     }
-    # 3. books에 book 저장하기
-    select_book = db.books.find_one({'isbn': isbn_receive}, {'_id': 0})
 
-    if select_book is None:
-        db.books.insert_one(insert_book)
-    else:
-        update_sentences = list(select_book['sentences'])
-        update_sentences.append(sentence)
-        db.books.update_one({'isbn': isbn_receive}, {'$set': {'sentences': update_sentences}})
+    # 3. books에 book 저장하기
+    db.books.insert_one(book)
+
+
     # 4. 성공 여부 & 성공 메시지 반환하기
     return jsonify({'result': 'success'})
 
-@app.route('/sentences', methods=['GET'])
-def getSentences():
-    isbn_receive = request.args.get('isbn_give')
-    book = db.books.find_one({'isbn':isbn_receive},{'_id':0})
-    if book is not None:
-        return jsonify({'result': 'success', 'sentences': book['sentences']})
-    else:
-        return jsonify({'result': 'success', 'sentences': []})
+
+
 
 @app.route('/booksave/edit', methods=["POST"])
 def edit_booksave():
     key_receive = request.form['key_give']
     page_receive = request.form['page_give']
-    contents_receive = request.form['content_give']
-    isbn_receive = request.form['isbn_give']
+    contents_receive = request.form['contents_give']
 
-    select_book = db.books.find_one({'isbn': isbn_receive}, {'_id': 0})
-    update_sentences = list(select_book['sentences'])
-    for sentence in update_sentences:
-        if sentence['key'] == key_receive:
-            sentence['page'] = page_receive
-            sentence['content'] = contents_receive
-
-    db.books.update_one({'isbn': isbn_receive}, {'$set': {'sentences': update_sentences}})
+	# key 기준으로 메시지를 찾아 내용과 생성 시각을 업데이트합니다.
+    db.books.update_one({'key': key_receive}, {'$set': {'page': page_receive, 'contents': contents_receive}})
 
     return jsonify({'result': 'success', 'msg': '메시지 변경에 성공하였습니다!'})
 
@@ -119,14 +106,19 @@ def bookAdd4():
     return render_template('bookAdd4.html')
 
 
-# def job():
-#     result = list(db.books.find({}, {'_id': 0}))
-#
-# schedule.every().day.at("00:00").do(job)
-#
-# while True:
-#     schedule.run_pending()
-#     time.sleep(1)
+
+@app.route('/print')
+def list_num(i):
+    if i<=db.books.count():
+        print(i)
+        i=i+1
+    else:
+        i=0
+        print(i)
+    return render_template('main.html', i)
+
+i = 0
+schedule.every(1).day.at("00:00").do(list_num)
 
 
 

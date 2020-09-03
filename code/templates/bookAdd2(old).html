@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <!-- Webpage Title -->
+    <title>오늘의 책 | TODAY's BOOK</title>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
+
+    <!-- JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+
+    <!-- 구글폰트 -->
+    <link href="https://fonts.googleapis.com/css?family=Do+Hyeon&display=swap" rel="stylesheet">
+
+    <script type="text/javascript">
+
+        let thumbnail = ''
+        let title = ''
+        let authors = ''
+        let publisher = ''
+        let date = ''
+        let isbn = ''
+        let key = ''
+
+        $(document).ready(function () {
+            $.ajax({
+                type: "GET",
+                url: "https://dapi.kakao.com/v3/search/book?target=isbn&sort=accuracy&page=1&size=50&query={{isbn}}",
+                data: {},
+                headers: {Authorization: "KakaoAK 8a66864513180bddba040cc373ab421b"}
+            })
+                .done(function (msg) {
+                    $("#cards-box").empty();
+                    let documents = msg["documents"];
+                    let document = documents[0];
+                    thumbnail = document.thumbnail
+                    title = document.title
+                    authors = document.authors
+                    publisher = document.publisher
+                    date = document.datetime.split('T')[0]
+                    isbn = document.isbn
+                    let tempHtml = `<div class="card">
+                                <img class="card-img-top" src="${document.thumbnail}" alt="Card image cap">
+                                <div class="card-body">
+                                    <p class="card-title" height="18">${document.title}</p>
+                                    <p class="card-text authors">${document.authors}</p>
+                                    <p class="card-text publisher">${document.publisher}</p>
+                                    <p class="card-text datetime">${document.datetime.split('T')[0]}</p>
+                                    <p class="card-text isbn" style="display:none">${document.isbn}</p>
+                                </div>
+                            </div>`;
+                    $("#cards-box").append(tempHtml);
+                })
+        })
+
+
+        function backSpace(title) {
+            location.href = "bookadd1?title=" + title
+        }
+
+        function addBook() {
+            $('#addBook').hide();
+            $('#inputBox').hide();
+            $.ajax({
+                type: "POST",
+                url: "/booksave",
+                data: {
+                    thumbnail_give: thumbnail,
+                    title_give: title,
+                    authors_give: authors,
+                    publisher_give: publisher,
+                    datetime_give: date,
+                    isbn_give: isbn,
+                    page_give: $('#pageWrite').val(),
+                    contents_give: $('#contents').val(),
+                },
+                success: function () {
+                    // window.location.reload();
+
+                    let today = new Date();
+                    let year = today.getFullYear(); // 년도
+                    let month = today.getMonth() + 1  // 월. 두자리수
+                    if (month < 10) {
+                        month = "0" + month;
+                    }
+                    let date = today.getDate();  // 날짜. 두자리수
+                    if (date < 10) {
+                        date = "0" + date;
+                    }
+                    let hour = today.getHours();  // 시간. 두자리수
+                    if (hour < 10) {
+                        hour = "0" + hour;
+                    }
+                    let minute = today.getMinutes();  // 분. 두자리수
+                    if (minute < 10) {
+                        minute = "0" + minute;
+                    }
+                    let page_give = $('#pageWrite').val();
+                    let contents_give = $('#contents').val();
+
+                    let contents = `<div class="card">
+                                <div class="card-body">
+                                    <p class="page-edit" id="${key}-pageEdit"></p>
+                                    <p class="page" id="${key}-page" height="18>">${'p. ' + page_give}</p>
+                                    <p class="time">${year + '-' + month + '-' + date + ' ' + hour + ':' + minute}</p>
+                                    <button id="${key}-edit" href="#" class="card-footer-item" onclick="editPost('${key}')">수정</button>
+                                    <textarea class="contents-edit" id="${key}-contentsEdit" cols="80" style="display:none;"></textarea>
+                                    <p class="contents" id="${key}-contents">${contents_give}</p>
+                                </div>
+                                <footer class="card-footer">
+                                     <a id="${key}-cancel" href="#" class="card-footer-item area-edit" onclick="hideEdits('${key}')" style="display: none">취소</a>
+                                     <a id="${key}-submit" href="#" class="card-footer-item area-edit" onclick="submitEdit('${key}')" style="display: none">수정완료</a>
+                                </footer>
+                            </div>`;
+                    $("#bookBox").append(contents);
+                    $('#additional').show();
+                }
+            })
+        }
+
+        // 수정 버튼을 누르면 editPost 함수가 호출된다.
+        // 어떤 메모인지 알기 위해 key 전달 받는다.
+        function editPost(key) {
+            // id 일치하는 메모에 수정 입력칸을 보여준다.
+            showEdits(key);
+            // 기존 메모 내용을 가져온다.
+            let page = $(`#${key}-page`).input();
+            let contents = $(`#${key}-contents`).text();
+            // 수정 입력 칸에 기존 메모 내용을 넣어둔다.
+            $(`#${key}-pageEdit`).val(page);
+            $(`#${key}-contentsEdit`).val(contents);
+        }
+
+        function showEdits(key) {
+            // 수정 입력 칸, 수정완료 버튼, 취소 버튼을 보여준다.
+            $(`#${key}-pageEdit`).show();
+            $(`#${key}-contentsEdit`).show();
+            $(`#${key}-submit`).show();
+            $(`#${key}-cancel`).show();
+
+            // 메모 내용, 수정 버튼을 숨긴다.
+            $(`#${key}-page`).hide();
+            $(`#${key}-contents`).hide();
+            $(`#${key}-edit`).hide();
+        }
+
+        // 취소 버튼을 누르면 hideEdits 함수가 호출된다.
+        // 어떤 메모인지 알기 위해 key 전달 받는다.
+        function hideEdits(key) {
+            // 수정 입력 칸, 수정완료 버튼, 취소 버튼을 숨긴다.
+            $(`#${key}-contentsEdit`).hide();
+            $(`#${key}-pageEdit`).hide();
+            $(`#${key}-submit`).hide();
+            $(`#${key}-cancel`).hide();
+
+            // 메모 내용, 수정 버튼을 보여준다.
+            $(`#${key}-page`).show();
+            $(`#${key}-contents`).show();
+            $(`#${key}-edit`).show();
+        }
+
+        // 수정완료 버튼을 누르면 submitEdit 함수가 호출된다.
+        // 어떤 메모인지 알기 위해 key 전달 받는다.
+        function submitEdit(key) {
+            // 수정된 메모 내용을 가져온다.
+            $(`#${key}-contentsEdit`).val();
+            $(`#${key}-pageEdit`).val();
+
+
+            // 메모 내용 수정을 서버에 요청한다.
+            $.ajax({
+                type: "POST",
+                url: "/booksave/edit",
+                data: {key_give: key, page_give: pageEdit, contents_give: contentsEdit},
+                success: function (response) {
+                    if (response['result'] == 'success') {
+                        alert(response['msg']);
+                        // 변경된 메모를 보기 위해 창을 새로고침한다.
+                        window.location.reload();
+                    } else {
+                        alert('메시지 변경에 실패했습니다.');
+                    }
+                }
+            });
+        }
+
+
+        // function camera() {
+        //     location.href = ""
+        // }
+
+
+        function contents() {
+            location.href = "bookadd4"
+        }
+
+        function additional() {
+            $('#addBook').show();
+            $('#inputBox').show();
+            $('#inputBox').empty();
+            $('#bookBox').show();
+            $('#additional').hide();
+        }
+    </script>
+    <style type="text/css">
+        * {
+            font-family: "Do Hyeon", sans-serif;
+        }
+
+        .card-img-top {
+            width: 200px;
+            height: auto;
+        }
+
+        .card {
+            width: 300px;
+            height: auto;
+        }
+    </style>
+
+</head>
+<body>
+<button onclick="backSpace()" type="button">← 책 등록</button>
+<button id="addBook" onclick="addBook()" type="button">+ 책장에 추가</button>
+<div id="cards-box" class="card-columns">
+    <div class="card">
+        <img class="card-img-top">
+        <div class="card-body">
+            <p class="card-title"></p>
+        </div>
+    </div>
+</div>
+<div>
+    <h2>밑줄</h2>
+    <h4>'밑줄'은 내가 책에서 발췌한 부분을 저장하는 곳 입니다. 다른 사람들에게 공유가 됩니다.</h4>
+    <div id="bookBox">
+        <div class="card" style="display: none">
+        </div>
+        <div id="inputBox">
+            <h3>책 페이지 입력하기</h3>
+            <input type="text" id="pageWrite" placeholder="####" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');">
+            <h3>공유할 문구 입력하기</h3>
+            <!--        <button id="camera" onclick="camera()">OCR</button>-->
+            <textarea type="text" id="contents" placeholder="문구 직접 입력"></textarea>
+        </div>
+        <span></span>
+        <div id="button-box">
+            <button id="additional" onclick="additional()" style="display:none;">추가하기</button>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>
