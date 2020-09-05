@@ -10,10 +10,29 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css"/>
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
     <style type="text/css">
 
         html {
             background-color: #010048;
+        }
+
+        .wrap {
+            color: white;
+        }
+
+        #copy {
+            max-height: 10%;
+            max-width: 10%;
+            border: none;
+            outline: none;
+        }
+
+        #menu {
+            max-height: 10%;
+            max-width: 10%;
+            border: none;
+            outline: none;
         }
 
         .center-card {
@@ -30,44 +49,48 @@
     </style>
     <script>
 
-        // function copy() {
-        //     let copy =
-        // }
-
 
         function library() {
             location.href = "library"
         }
 
 
-        $(document).ready(function ({i}) {
+        $(document).ready(function getRandomBook() {
             $('#book-title').empty();
             $('#book-page').empty();
             $('#book-contents').empty();
             $.ajax({
                 type: "GET",
-                url: "/print",
+                url: "/booksave",
                 data: {},
                 success: function (response) {
-                    let book = response["books"];
-                    makeCard(book[{i}]["title"], book[{i}]["page"], book[{i}]["contents"])
+                    let books = response["books"];
+                    let random_num = Math.floor(Math.random() * books.length)  //랜덤으로 숫자 뽑기
+                    let random_title = books[random_num]["title"];
+                    let random_page = books[random_num]["sentences"][random_num]["page"];
+                    let random_sentence = books[random_num]["sentences"][random_num]["content"];
+                    makeCard(random_title, random_page, random_sentence);
                 }
             })
         })
 
 
-        function makeCard(title, page, contents) {
+        function makeCard(title, page, content) {
             $('#book-title').append(title);
             $('#book-page').append(page);
-            $('#book-contents').append(contents);
+            $('#book-contents').append(content);
         }
 
 
-        function copyText() {
-            $('#book-contents').select();
-                document.execCommand("copy");
-                alert('복사되었습니다')
+        function copyText(element) {  //element 값이 들어간 함수
+            let $temp = $("<input>"); //$temp를
+            $("body").append($temp);
+            $temp.val($(element).text()).select(); //
+            document.execCommand("copy");  //select한 값을 복사해라
+            $temp.remove();  //$temp 내용을 다 지워라
+            alert("복사되었습니다");
         }
+
 
     </script>
 </head>
@@ -80,8 +103,10 @@
     <div id="book-contents">
     </div>
     <div class="menu">
-        <button type="image" id="copy" src="" onclick="copyText()">copy</button>
-        <button id="search" onclick="library()">menu</button>
+        <button type="button" id="copy"><img src="{{ url_for('static', filename='copy.jpg') }}" onclick="copyText('#book-contents')">
+        </button>
+        <button type="button" id="menu"><img src="{{ url_for('static', filename='menu.jpg') }}" onclick="library()">
+        </button>
     </div>
 </div>
 

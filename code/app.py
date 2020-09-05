@@ -4,6 +4,7 @@ from flask import Flask, render_template, jsonify, request
 from datetime import datetime
 import schedule
 import time
+import random
 
 app = Flask(__name__)
 
@@ -62,7 +63,7 @@ def addBook():
         'publisher': publisher_receive,
         'datetime': datetime_receive,
         'isbn': isbn_receive,
-        'sentences': sentence,
+        'sentences': [sentence],
         'created_at': datetime.now()
     }
     # 3. books에 book 저장하기
@@ -119,14 +120,25 @@ def bookAdd4():
     return render_template('bookAdd4.html')
 
 
-# def job():
-#     result = list(db.books.find({}, {'_id': 0}))
+@app.route('/random')
+def random():
+    li = db.books.find({}, )
+    choiceList = random.choice()
+
+
+# @app.route('/print')
+# def list_num():
+#     i = 0
+#     if i<=db.books.count():
+#         print(i)
+#         i=i+1
+#     else:
+#         i=0
+#         print(i)
+#     return render_template('main.html', i=i)
 #
-# schedule.every().day.at("00:00").do(job)
 #
-# while True:
-#     schedule.run_pending()
-#     time.sleep(1)
+# schedule.every(1).day.at("00:00").do(list_num)
 
 
 

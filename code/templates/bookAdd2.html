@@ -65,7 +65,7 @@
             $('#cards-box').empty();
             $.ajax({
                 type: "GET",
-                url: "/sentences?isbn_give="+isbn,
+                url: "/sentences?isbn_give=" + isbn,
                 data: {},
                 success: function (response) {
                     if (response['result'] == 'success') {
@@ -176,6 +176,12 @@
                 }
             });
         }
+
+
+        function backSpace() {
+            location.href = "bookadd1"
+        }
+
     </script>
 
     <style>
@@ -210,6 +216,7 @@
 </head>
 
 <body>
+<button onclick="backSpace()" type="button">← 책 검색</button>
 <div class="wrap">
     <figure class="figure" id="book-box">
 
@@ -221,9 +228,9 @@
         </p>
     </div>
     <div id="post-box">
-        <input type="text" id="pageWrite" placeholder="페이지" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');">
+        <input type="text" id="pageWrite" placeholder="책 페이지 입력하기" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');">
         <div class="area-write">
-            <textarea placeholder="공유하고 싶은 소식을 입력해주세요" name="contents" id="contents" cols="30" rows="10"></textarea>
+            <textarea placeholder="공유할 문구 입력하기" name="contents" id="contents" cols="30" rows="10"></textarea>
             <button class="btn btn-danger" onclick="writePost()">작성하기</button>
         </div>
     </div>
