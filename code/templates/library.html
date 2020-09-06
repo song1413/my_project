@@ -45,7 +45,7 @@
                 success: function (response) {
                     let books = response["books"];
                     for (let i = 0; i < books.length; i++) {
-                        makeCard(books[i]["thumbnail"], books[i]["isbn"])
+                        makeCard(books[i]["thumbnail"], books[i]["isbn"].split(' ')[0])
                     }
                 }
             })
@@ -60,7 +60,6 @@
                     </div>`;
             $("#cards-box").append(temp_html);
         }
-
 
 
     </script>

@@ -20,7 +20,8 @@ def home():
 
 @app.route('/main')
 def main():
-    return render_template('main.html')
+    count = db.books.count('page')
+    return render_template('main.html', count=count)
 
 
 @app.route('/bookadd1')
@@ -78,6 +79,9 @@ def addBook():
     # 4. 성공 여부 & 성공 메시지 반환하기
     return jsonify({'result': 'success'})
 
+
+
+
 @app.route('/sentences', methods=['GET'])
 def getSentences():
     isbn_receive = request.args.get('isbn_give')
@@ -104,6 +108,13 @@ def edit_booksave():
     db.books.update_one({'isbn': isbn_receive}, {'$set': {'sentences': update_sentences}})
 
     return jsonify({'result': 'success', 'msg': '메시지 변경에 성공하였습니다!'})
+
+
+@app.route('/booksave/delete', methods=["POST"])
+def delete_booksave():
+    key_receive = request.form['key_give']
+    db.books.delete_one({'key': key_receive})
+    return jsonify({'result': 'success'})
 
 
 
@@ -144,3 +155,5 @@ def random():
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)
+
+

@@ -65,7 +65,7 @@
                 data: {},
                 success: function (response) {
                     let books = response["books"];
-                    let random_num = Math.floor(Math.random() * books.length)  //랜덤으로 숫자 뽑기
+                    let random_num = Math.floor(Math.random() * {count})  //랜덤으로 숫자 뽑기
                     let random_title = books[random_num]["title"];
                     let random_page = books[random_num]["sentences"][random_num]["page"];
                     let random_sentence = books[random_num]["sentences"][random_num]["content"];

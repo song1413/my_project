@@ -101,8 +101,9 @@
                             <h6 class="card-subtitle mb-2 text-muted">${created_at}</h6>
                         </div>
                         <footer class="card-footer">
-                            <a id="${key}-edit" href="#" class="card-footer-item" onclick="showEdits('${key}')">수정</a>
-                            <a id="${key}-cancel" href="#" class="card-footer-item area-edit" onclick="hideEdits('${key}')">취소</a>
+                            <a id="${key}-edit" href="#" class="card-footer-item" onclick="showEdit('${key}')">수정</a>
+                            <a id="${key}-delete" href="#" class="card-footer-item" onclick="deleteEdit('${key}')">삭제</a>
+                            <a id="${key}-cancel" href="#" class="card-footer-item area-edit" onclick="hideEdit('${key}')">취소</a>
                             <a id="${key}-submit" href="#" class="card-footer-item area-edit" onclick="submitEdit('${key}')">수정완료</a>
                         </footer>
                     </div>`;
@@ -138,7 +139,7 @@
             }
         }
 
-        function showEdits(key) {
+        function showEdit(key) {
             $(`#${key}-textarea`).show();
             $(`#${key}-input`).show();
             $(`#${key}-submit`).show();
@@ -146,9 +147,10 @@
 
             $(`#${key}-contents`).hide();
             $(`#${key}-edit`).hide();
+            $(`#${key}-delete`).hide();
         }
 
-        function hideEdits(key) {
+        function hideEdit(key) {
             $(`#${key}-textarea`).hide();
             $(`#${key}-input`).hide();
             $(`#${key}-submit`).hide();
@@ -156,6 +158,7 @@
 
             $(`#${key}-contents`).show();
             $(`#${key}-edit`).show();
+            $(`#${key}-delete`).show();
         }
 
         function submitEdit(key) {
@@ -175,6 +178,29 @@
                     }
                 }
             });
+        }
+
+        function deleteEdit(key) {
+            if (confirm("정말 삭제하시겠습니까?") == true) {
+                delete_contents(key)
+            } else {
+                return false;
+            }
+        }
+
+
+        function delete_contents(key) {
+             $.ajax({
+                    type: "POST",
+                    url: "/booksave/delete",
+                    data: {key_give: key},
+                    success: function (response) {
+                        if (response['result'] == 'success') {
+                            alert(response['삭제되었습니다']);
+                            window.location.reload();
+                        }
+                    }
+                });
         }
 
 
@@ -228,7 +254,8 @@
         </p>
     </div>
     <div id="post-box">
-        <input type="text" id="pageWrite" placeholder="책 페이지 입력하기" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');">
+        <input type="text" id="pageWrite" placeholder="책 페이지 입력하기"
+               onkeyup="this.value=this.value.replace(/[^0-9]/g,'');">
         <div class="area-write">
             <textarea placeholder="공유할 문구 입력하기" name="contents" id="contents" cols="30" rows="10"></textarea>
             <button class="btn btn-danger" onclick="writePost()">작성하기</button>
@@ -248,7 +275,6 @@
             </header>
             <div class="card-content">
                 <div class="content">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec iaculis mauris.
                     <a href="#">@bulmaio</a>. <a href="#">#css</a> <a href="#">#responsive</a>
                     <br>
                     <time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time>
