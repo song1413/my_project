@@ -20,8 +20,16 @@ def home():
 
 @app.route('/main')
 def main():
-    count = db.books.count('page')
-    return render_template('main.html', count=count)
+    select_book = db.books.find({})
+    choice_list = random.choice(list(select_book))
+    choice_title = choice_list['title']
+    choice_sentences = choice_list['sentences']
+    choice_page = random.choice(list(choice_sentences))['page']
+    choice_content = random.choice(list(choice_sentences))['content']
+    sentences = {'title': choice_title, 'page': choice_page,
+                 'content': choice_content}
+
+    return render_template('main.html', sentences=sentences)
 
 
 @app.route('/bookadd1')
@@ -67,7 +75,7 @@ def addBook():
         'sentences': [sentence],
         'created_at': datetime.now()
     }
-    # 3. books에 book 저장하기
+    # 3. books에 select_book 저장하기
     select_book = db.books.find_one({'isbn': isbn_receive}, {'_id': 0})
 
     if select_book is None:
@@ -130,11 +138,6 @@ def read_books():
 def bookAdd4():
     return render_template('bookAdd4.html')
 
-
-@app.route('/random')
-def random():
-    li = db.books.find({}, )
-    choiceList = random.choice()
 
 
 # @app.route('/print')

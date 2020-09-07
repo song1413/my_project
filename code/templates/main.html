@@ -55,21 +55,16 @@
         }
 
 
-        $(document).ready(function getRandomBook() {
+        $(document).ready(function getRandomBook(sentences) {
             $('#book-title').empty();
             $('#book-page').empty();
             $('#book-contents').empty();
             $.ajax({
                 type: "GET",
-                url: "/booksave",
+                url: "/main",
                 data: {},
                 success: function (response) {
-                    let books = response["books"];
-                    let random_num = Math.floor(Math.random() * {count})  //랜덤으로 숫자 뽑기
-                    let random_title = books[random_num]["title"];
-                    let random_page = books[random_num]["sentences"][random_num]["page"];
-                    let random_sentence = books[random_num]["sentences"][random_num]["content"];
-                    makeCard(random_title, random_page, random_sentence);
+                    makeCard(response.title, response.page, response.content);
                 }
             })
         })
@@ -103,10 +98,8 @@
     <div id="book-contents">
     </div>
     <div class="menu">
-        <button type="button" id="copy"><img src="{{ url_for('static', filename='copy.jpg') }}" onclick="copyText('#book-contents')">
-        </button>
-        <button type="button" id="menu"><img src="{{ url_for('static', filename='menu.jpg') }}" onclick="library()">
-        </button>
+        <img src="{{ url_for('static', filename='copy.jpg') }}" onclick="copyText('#book-contents')" id="copy">
+        <img src="{{ url_for('static', filename='menu.jpg') }}" onclick="library()" id="menu">
     </div>
 </div>
 
