@@ -52,7 +52,7 @@
                                     <p class="card-text authors">${authors}</p>
                                     <p class="card-text publisher">${publisher}</p>
                                     <p class="card-text datetime">${datetime}</p>
-                                    <p class="card-text isbn" style="display:block">${isbn}</p>
+                                    <p class="card-text isbn" style="display:none">${isbn}</p>
                                 </div>
                             </div>`;
             $("#cards-box").append(tempHtml);
@@ -66,7 +66,7 @@
         }
 
         function backSpace() {
-            location.href = "main"
+            location.href = "library"
         }
 
         function bookClick(isbn) {
@@ -81,36 +81,64 @@
             font-family: "Do Hyeon", sans-serif;
         }
 
-        .card-img-top {
-            width: 200px;
-            height: auto;
+        header {
+            height: 60px;
+            width: 100%;
+            color: white;
+            background: lightcoral;
+            font-size: xx-large;
+            padding-left: 1rem;
+            padding-top: 0.5rem;
+            position: fixed;
+            top: 0;
         }
 
-        .card {
-            width: 300px;
-            height: auto;
+        body {
+            padding-top: 5rem; /* header에 안겹치게 */
+        }
+
+        menu {
+            height: 60px;
+            width: 100%;
+            position: fixed;
+            bottom: 0px;
+            background: lightcoral;
+        }
+
+        search {
+            padding-left: 2%;
+            position: fixed;
+            top: 10%;
+            width: 100%;
+        }
+
+        #bookName {
+            width: 98%;
+            background-color: #e9ecef;
+            border-color: #e9ecef;
+            border-width: thick;
+            border-radius: 10px;
+            border-style: solid;
         }
 
     </style>
 </head>
-
 <body>
-<button onclick="backSpace()" type="button">← 책 추가</button>
-
-
-<div class="bookSearch">
-    <input id="bookName" type="text" onkeyup="enterkey()" placeholder="검색어를 입력하세요">
-
-    <div id="cards-box" class="card-columns" style="display:none">
-        <div class="card">
-            <img class="card-img-top"
-            <div class="card-body">
-                <p class="card-title"></p>
-            </div>
+<div id="cards-box" class="card-columns" style="display:none">
+    <div class="card">
+        <img class="card-img-top">
+        <div class="card-body">
+            <p class="card-title"></p>
         </div>
     </div>
 </div>
-
+</div>
 </body>
-
+<header onclick="backSpace()">← 책장
+</header>
+<search class="bookSearch">
+    <input id="bookName" type="text" onkeyup="enterkey()" placeholder=" 검색어를 입력하세요">
+</search>
+<menu>
+</menu>
 </html>

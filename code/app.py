@@ -20,7 +20,7 @@ def home():
 
 @app.route('/main')
 def main():
-    choice_book = random.choice(list(db.books.find({})))
+    choice_book = random.choice(list(db.books.find({'sentences': {'$not': {'$size': 0}}})))  # sentences가 없는 경우는 제외
     choice_sentence = random.choice(list(choice_book['sentences']))
     random_sentence = {'title': choice_book['title'], 'page': choice_sentence['page'],
                        'content': choice_sentence['content']}
@@ -116,7 +116,13 @@ def edit_booksave():
 @app.route('/booksave/delete', methods=["POST"])
 def delete_booksave():
     key_receive = request.form['key_give']
-    db.books.delete_one({'key': key_receive})
+    isbn_receive = request.form['isbn_give']
+    select_book = db.books.find_one({'isbn': isbn_receive}, {'_id': 0})
+    delete_sentences = list(select_book['sentences'])
+    for idx, sentence in enumerate(delete_sentences):
+        if sentence['key'] == key_receive:
+            delete_sentences.pop(idx)  #key값을 가진 sentences를 삭제해라
+    db.books.update_one({'isbn': isbn_receive}, {'$set': {'sentences': delete_sentences}})  #sentences가 업데이트 된 book을 업데이트 해라
     return jsonify({'result': 'success'})
 
 
@@ -126,7 +132,6 @@ def read_books():
     # 1. mongodb에서 모든 데이터 조회해오기 (read)
     result = list(db.books.find({}, {'_id': 0}))
     return jsonify({'result': 'success', 'books':result})
-
 
 
 @app.route('/bookadd4')

@@ -16,11 +16,21 @@
             background-color: #010048;
         }
 
-        h1,h2 {
+        * {
+            font-family: "Do Hyeon", sans-serif;
+        }
+
+        h1, h2 {
             background-color: #010048;
             color: white;
             text-align: center;
-            vertical-align: middle;
+        }
+
+        #content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
 
     </style>
@@ -30,7 +40,9 @@
     </script>
 </head>
 <body>
-<h1>오늘의 책</h1>
-<h2>TODAY's BOOK</h2>
+    <div id="content">
+        <h1>오늘의 책</h1>
+        <h2>TODAY's BOOK</h2>
+    </div>
 </body>
 </html>

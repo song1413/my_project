@@ -17,34 +17,56 @@
             background-color: #010048;
         }
 
+        * {
+            font-family: "Do Hyeon", sans-serif;
+        }
+
         .wrap {
             color: white;
+        }
+
+        #book-title {
+            font-size: small;
+            position: absolute;
+            top: 2%;
+            right: 5%;
+            text-align: right;
+        }
+
+        #book-page {
+            font-size: small;
+            position: absolute;
+            top: 5%;
+            right: 5%;
+            text-align: right;
+        }
+
+
+        #book-contents {
+            font-size: large;
+            position: absolute;  /* 부모를 기준으로 움직여라(전체 틀을 고정) */
+            top: 50%;
+            left: 50%;
+            text-align: center;
+            transform: translate(-50%, 0%);  /* translate : 지정요소 X축 또는 Y축으로 이동 */
         }
 
         #copy {
             max-height: 10%;
             max-width: 10%;
-            border: none;
-            outline: none;
+            position: absolute;
+            bottom: 3%;
+            left: 10%;
         }
 
         #menu {
             max-height: 10%;
             max-width: 10%;
-            border: none;
-            outline: none;
+            position: absolute;
+            bottom: 3%;
+            right: 10%;
         }
 
-        .center-card {
-            background-color: #010048;
-            color: white;
-            text-align: center;
-            vertical-align: middle;
-        }
-
-        .align-self-center {
-            text-align: center;
-            color: white;
 
     </style>
     <script>
@@ -55,34 +77,10 @@
         }
 
 
-        $(document).ready(function getRandomBook(sentences) {
-            $('#book-title').empty();
-            $('#book-page').empty();
-            $('#book-contents').empty();
-            $.ajax({
-                type: "GET",
-                url: "/main",
-                data: {},
-                success: function (response) {
-                    makeCard(response['title'], response['page'], response['content']);
-                }
-            })
-        })
-
-
-        function makeCard(title, page, content) {
-            $('#book-title').append(title);
-            $('#book-page').append(page);
-            $('#book-contents').append(content);
-        }
-
-
-        function copyText(element) {  //element 값이 들어간 함수
-            let $temp = $("<input>"); //$temp를
-            $("body").append($temp);
-            $temp.val($(element).text()).select(); //
+        function copyText() {
+            let textField = document.getElementById('hidden-contents'); //'hidden-contents'id를 가진 곳을 textField라고 하자
+            textField.select();  //input창에 있는 값을 선택한다
             document.execCommand("copy");  //select한 값을 복사해라
-            $temp.remove();  //$temp 내용을 다 지워라
             alert("복사되었습니다");
         }
 
@@ -91,17 +89,17 @@
 </head>
 <body>
 <div class="wrap">
-    <div id="book-title">
+    <div id="book-title">{{sentence.title}}
     </div>
-    <div id="book-page">
+    <div id="book-page">p. {{sentence.page}}
     </div>
-    <div id="book-contents">
+    <div id="book-contents">{{sentence.content}}
+        <input type="text" id="hidden-contents" style="opacity: 0" value="{{sentence.content}}">
     </div>
     <div class="menu">
         <img src="{{ url_for('static', filename='copy.jpg') }}" onclick="copyText('#book-contents')" id="copy">
         <img src="{{ url_for('static', filename='menu.jpg') }}" onclick="library()" id="menu">
     </div>
 </div>
-
 </body>
 </html>

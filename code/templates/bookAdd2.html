@@ -46,7 +46,7 @@
                     authors = document.authors
                     publisher = document.publisher
                     date = document.datetime.split('T')[0]
-                    isbn = document.isbn
+                    isbn = document.isbn.split(' ')[0]
 
                     let tempHtml = `<img src="${document.thumbnail}" class="card-img-top"
                                     alt="A generic square placeholder image with rounded corners in a figure.">
@@ -193,7 +193,7 @@
              $.ajax({
                     type: "POST",
                     url: "/booksave/delete",
-                    data: {key_give: key},
+                    data: {key_give: key, isbn_give: isbn}, //책 찾을 isbn 넘겨주고, key 찾을 key값 넘겨주고
                     success: function (response) {
                         if (response['result'] == 'success') {
                             alert('삭제되었습니다');
@@ -281,9 +281,6 @@
                 </div>
             </div>
             <footer class="card-footer">
-                <a href="#" class="card-footer-item">Save</a>
-                <a href="#" class="card-footer-item">Edit</a>
-                <a href="#" class="card-footer-item">Delete</a>
             </footer>
         </div>
     </div>
