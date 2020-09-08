@@ -20,16 +20,11 @@ def home():
 
 @app.route('/main')
 def main():
-    select_book = db.books.find({})
-    choice_list = random.choice(list(select_book))
-    choice_title = choice_list['title']
-    choice_sentences = choice_list['sentences']
-    choice_page = random.choice(list(choice_sentences))['page']
-    choice_content = random.choice(list(choice_sentences))['content']
-    sentences = {'title': choice_title, 'page': choice_page,
-                 'content': choice_content}
-
-    return render_template('main.html', sentences=sentences)
+    choice_book = random.choice(list(db.books.find({})))
+    choice_sentence = random.choice(list(choice_book['sentences']))
+    random_sentence = {'title': choice_book['title'], 'page': choice_sentence['page'],
+                       'content': choice_sentence['content']}
+    return render_template('main.html', sentence=random_sentence)
 
 
 @app.route('/bookadd1')

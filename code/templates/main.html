@@ -64,7 +64,7 @@
                 url: "/main",
                 data: {},
                 success: function (response) {
-                    makeCard(response.title, response.page, response.content);
+                    makeCard(response['title'], response['page'], response['content']);
                 }
             })
         })
