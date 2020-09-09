@@ -73,7 +73,7 @@
             height: auto;
         }
 
-        .card {  /* 부트스트랩에 의해 불려오는 id=card*/
+        .card { /* 부트스트랩에 의해 불려오는 id=card*/
             border: none;
         }
 
@@ -105,30 +105,27 @@
             max-height: 70%;
             max-width: 70%;
             position: absolute;
-            bottom: 5%;
+            bottom: 11%;
             left: 8%;
         }
 
         #library {
-            max-height: 65%;
-            max-width: 65%;
+            max-height: 66%;
+            max-width: 66%;
             position: absolute;
-            bottom: 5%;
+            bottom: 11%;
             left: 34%;
         }
 
-        menu {
-            height: 60px;
-            width: 100%;
-            position: fixed;
-            bottom: 0px;
-            background: lightcoral;
+        .card-columns {
+            padding: 3rem;
         }
+
 
     </style>
 </head>
 <body>
-<div id="wrap">
+<div class="wrap">
     <div id="cards-box" class="card-columns">
     </div>
 </div>
@@ -139,8 +136,19 @@
 </add>
 </body>
 <menu>
-    <img src="{{ url_for('static', filename='home.png') }}" id="home" onclick="home()">
-    <img src="{{ url_for('static', filename='library_select.png') }}" id="library" onclick="library()">
+    <nav class="navbar fixed-bottom navbar-expand-sm navbar-light" style="background-color: lightcoral">
+        <a class="navbar-brand">　</a>  <!--글자에 따라서 네비바 높이가 달라져서 ㄱ+한자+9 이용-->
+        <div class="collapse navbar-nav" id="navbarCollapse">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <img src="{{ url_for('static', filename='home.png') }}" id="home" onclick="home()">
+                </li>
+                <li class="nav-item">
+                    <img src="{{ url_for('static', filename='library_select.png') }}" id="library" onclick="library()">
+                </li>
+            </ul>
+        </div>
+    </nav>
 </menu>
 
 </html>

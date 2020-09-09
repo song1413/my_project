@@ -4,10 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>스파르타코딩클럽 | 새가 날아든다</title>
-
-    <link rel="shortcut icon" href="/static/images/favicon.png">
-
+    <title>오늘의 책 | TODAY's BOOK</title>
+    <!-- 구글폰트 -->
+    <link href="https://fonts.googleapis.com/css?family=Do+Hyeon&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
@@ -48,13 +47,19 @@
                     date = document.datetime.split('T')[0]
                     isbn = document.isbn.split(' ')[0]
 
-                    let tempHtml = `<img src="${document.thumbnail}" class="card-img-top"
+                    let tempHtml = `<div class="container">
+                                    <div class="row">
+                                    <img src="${document.thumbnail}" class="col-4"
                                     alt="A generic square placeholder image with rounded corners in a figure.">
+                                    <div class="col-8">
                                     <figcaption class="figure-caption">${document.title}</figcaption>
                                     <figcaption class="figure-caption">${document.authors}</figcaption>
                                     <figcaption class="figure-caption">${document.publisher}</figcaption>
                                     <figcaption class="figure-caption">${document.datetime.split('T')[0]}</figcaption>
-                                    <figcaption class="figure-caption">${document.isbn}</figcaption>`;
+                                    <figcaption class="figure-caption" style="display:none;">${document.isbn.split(' ')[0]}</figcaption>
+                                    </div>
+                                    </div>
+                                    </div>`;
                     $("#book-box").append(tempHtml);
                     getMessages();
                 }
@@ -96,9 +101,9 @@
                         <div class="card-body">
                             <input id="${key}-input" class="area-edit" value="${page}"/>
                             <textarea id="${key}-textarea" class="area-edit" cols="80">${content}</textarea>
-                            <h5 id="${key}-contents" class="card-title">${content}</h5>
-                            <h6 id="${key}-username"class="card-subtitle mb-2 text-muted">P.${page}</h6>
-                            <h6 class="card-subtitle mb-2 text-muted">${created_at}</h6>
+                            <h6 id="${key}-username"class="card-subtitle mb-2" style="font-weight:bold; color:black; font-size:small">P.${page}</h6>
+                            <h6 class="card-subtitle mb-2 text-muted" style="font-size:small">${created_at}</h6>
+                            <h6 id="${key}-contents" class="card-title">${content}</h6>
                         </div>
                         <footer class="card-footer">
                             <a id="${key}-edit" href="#" class="card-footer-item" onclick="showEdit('${key}')">수정</a>
@@ -110,25 +115,34 @@
         }
 
         function writePost() {
-            $.ajax({
-                type: "POST",
-                url: "/booksave",
-                data: {
-                    thumbnail_give: thumbnail,
-                    title_give: title,
-                    authors_give: authors,
-                    publisher_give: publisher,
-                    datetime_give: date,
-                    isbn_give: isbn,
-                    page_give: $('#pageWrite').val(),
-                    contents_give: $('#contents').val(),
-                },
-                success: function () {
-                    alert('저장되었습니다.')
-                    location.reload()
-                }
-            })
+            let page_value = $('#pageWrite').val();
+            let content_value = $('#contents').val();
+            if (page_value == '') {
+                alert('페이지를 입력해 주세요')
+            } else if (content_value == '') {
+                alert('내용을 입력해 주세요')
+            } else {
+                $.ajax({
+                    type: "POST",
+                    url: "/booksave",
+                    data: {
+                        thumbnail_give: thumbnail,
+                        title_give: title,
+                        authors_give: authors,
+                        publisher_give: publisher,
+                        datetime_give: date,
+                        isbn_give: isbn,
+                        page_give: $('#pageWrite').val(),
+                        contents_give: $('#contents').val(),
+                    },
+                    success: function () {
+                        alert('저장되었습니다.')
+                        location.reload()
+                    }
+                })
+            }
         }
+
 
         function openclose() {
             let status = $('#post-box').css('display');
@@ -190,17 +204,40 @@
 
 
         function delete_contents(key) {
-             $.ajax({
-                    type: "POST",
-                    url: "/booksave/delete",
-                    data: {key_give: key, isbn_give: isbn}, //책 찾을 isbn 넘겨주고, key 찾을 key값 넘겨주고
-                    success: function (response) {
-                        if (response['result'] == 'success') {
-                            alert('삭제되었습니다');
-                            window.location.reload();
-                        }
+            $.ajax({
+                type: "POST",
+                url: "/booksave/delete",
+                data: {key_give: key, isbn_give: isbn}, //책 찾을 isbn 넘겨주고, key 찾을 key값 넘겨주고
+                success: function (response) {
+                    if (response['result'] == 'success') {
+                        alert('삭제되었습니다');
+                        window.location.reload();
                     }
-                });
+                }
+            });
+        }
+
+
+        function deleteBook(isbn) {
+            if (confirm("정말 삭제하시겠습니까?") == true) {
+                delete_book(isbn)
+            } else {
+                return false;
+            }
+        }
+
+        function delete_book(isbn) {
+            $.ajax({
+                type: "POST",
+                url: "/book/delete",
+                data: {isbn_give: isbn}, //책 찾을 isbn 넘겨주고
+                success: function (response) {
+                    if (response['result'] == 'success') {
+                        alert('삭제되었습니다');
+                        location.href = "library"
+                    }
+                }
+            });
         }
 
 
@@ -208,20 +245,73 @@
             location.href = "bookadd1"
         }
 
+        function home() {
+            location.href = "main"
+        }
+
+        function library() {
+            location.href = "library"
+        }
+
     </script>
 
     <style>
+        * {
+            font-family: "Do Hyeon", sans-serif;
+        }
+
+        header {
+            height: 60px;
+            width: 100%;
+            color: white;
+            background: lightcoral;
+            font-size: xx-large;
+            padding-left: 1rem;
+            padding-top: 0.5rem;
+            position: fixed;
+            top: 0;
+        }
+
+        body {
+            padding-top: 5rem; /* header에 안겹치게 */
+            padding-bottom: 3.6rem;
+        }
+
+        .col-8 {
+            padding-right: 0;
+        }
+
+        .col-4 {
+            padding-right: 0;
+        }
+
+        .header {
+            margin-left: 0.9rem;
+            margin-right: 0.9rem;
+        }
+
+        #cards-box {
+            margin-left: 0.9rem;
+            margin-right: 0.9rem;
+        }
+
+        .card-body {
+            background-color: rgba(0, 0, 0, .03);
+        }
+
+        #post-box {
+            margin-left: 0.69rem;
+            margin-right: 0.9rem;
+            display: none;
+        }
+
         .area-edit {
             display: none;
         }
 
-        .wrap {
-            width: 700px;
-            margin: 10px auto;
-        }
-
         #contents {
-            width: 700px;
+            width: 20.7rem;
+            margin: 0.2rem;
         }
 
         .area-write {
@@ -235,23 +325,40 @@
             margin: 20px 0 20px 0;
         }
 
-        #post-box {
-            display: none;
+        b {
+            font-size: large;
+            padding-left: 49%;
+            color: black;
         }
+
+        #home {
+            max-height: 70%;
+            max-width: 70%;
+            position: absolute;
+            bottom: 11%;
+            left: 8%;
+        }
+
+        #library {
+            max-height: 66%;
+            max-width: 66%;
+            position: absolute;
+            bottom: 11%;
+            left: 34%;
+        }
+
     </style>
 </head>
 
 <body>
-<button onclick="backSpace()" type="button">← 책 검색</button>
 <div class="wrap">
     <figure class="figure" id="book-box">
-
     </figure>
     <div class="header">
         <p>
             <button onclick="openclose()" type="button" class="btn btn-outline-info btn-sm">밑줄</button>
-            은 내가 책에서 발췌한 부분을 저장하는 곳 입니다. 다른 사람들에게 공유가 됩니다.
-        </p>
+            을 눌러 내가 책에서 발췌한 부분을 저장하세요. 다른 사람들에게 공유가 됩니다.
+
     </div>
     <div id="post-box">
         <input type="text" id="pageWrite" placeholder="책 페이지 입력하기"
@@ -265,7 +372,6 @@
         <div class="card">
             <header class="card-header">
                 <p class="card-header-title">
-                    Component
                 </p>
                 <a href="#" class="card-header-icon" aria-label="more options">
                         <span class="icon">
@@ -275,9 +381,6 @@
             </header>
             <div class="card-content">
                 <div class="content">
-                    <a href="#">@bulmaio</a>. <a href="#">#css</a> <a href="#">#responsive</a>
-                    <br>
-                    <time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time>
                 </div>
             </div>
             <footer class="card-footer">
@@ -286,5 +389,23 @@
     </div>
 </div>
 </body>
-
+<header>
+    <a onclick="backSpace()">← 책검색</a>
+    <b onclick="deleteBook(isbn)">책삭제</b>
+</header>
+<menu>
+    <nav class="navbar fixed-bottom navbar-expand-sm navbar-light" style="background-color: lightcoral">
+        <a class="navbar-brand">　</a>  <!--글자에 따라서 네비바 높이가 달라져서 ㄱ+한자+9 이용-->
+<!--        <div class="collapse navbar-nav" id="navbarCollapse">-->
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <img src="{{ url_for('static', filename='home.png') }}" id="home" onclick="home()">
+                </li>
+                <li class="nav-item">
+                    <img src="{{ url_for('static', filename='library_none.png') }}" id="library" onclick="library()">
+                </li>
+            </ul>
+<!--        </div>-->
+    </nav>
+</menu>
 </html>

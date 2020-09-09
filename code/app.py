@@ -126,6 +126,12 @@ def delete_booksave():
     return jsonify({'result': 'success'})
 
 
+@app.route('/book/delete', methods=["POST"])
+def delete_book():
+    isbn_receive = request.form['isbn_give']
+    db.books.delete_one({'isbn': isbn_receive})
+    return jsonify({'result': 'success'})
+
 
 @app.route('/booksave', methods=['GET'])
 def read_books():

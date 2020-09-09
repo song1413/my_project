@@ -13,12 +13,14 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
           crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
 
     <!-- JS -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
             integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
             crossorigin="anonymous"></script>
+
 
     <!-- 구글폰트 -->
     <link href="https://fonts.googleapis.com/css?family=Do+Hyeon&display=swap" rel="stylesheet">
@@ -45,14 +47,18 @@
 
 
         function makeCard(thumbnail, title, authors, publisher, datetime, isbn) {
-            let tempHtml = `<div class="card" onclick="bookClick('${isbn}')">
-                                <img class="card-img-top" src="${thumbnail}" alt="Card image cap">
-                                <div class="card-body">
-                                    <p class="card-title">${title}</p>
-                                    <p class="card-text authors">${authors}</p>
-                                    <p class="card-text publisher">${publisher}</p>
-                                    <p class="card-text datetime">${datetime}</p>
+            let tempHtml = `<div class="container" onclick="bookClick('${isbn}')">
+                                <div class="row">
+                                <div class="col-4">
+                                    <img class="card-img" src="${thumbnail}" alt="Card image cap">
+                                </div>
+                                <div class="col-8">
+                                    <p class="card-title" style="font-size: large">${title}</p>
+                                    <p class="card-text authors" style="font-size: medium">${authors}</p>
+                                    <p class="card-text publisher" style="font-size: medium">${publisher}</p>
+                                    <p class="card-text datetime" style="font-size: medium; color:grey">${datetime} 출간</p>
                                     <p class="card-text isbn" style="display:none">${isbn}</p>
+                                </div>
                                 </div>
                             </div>`;
             $("#cards-box").append(tempHtml);
@@ -73,7 +79,13 @@
             location.href = "bookadd2?isbn=" + isbn
         }
 
+        function home() {
+            location.href = "main"
+        }
 
+        function library() {
+            location.href = "library"
+        }
     </script>
 
     <style type="text/css">
@@ -94,16 +106,10 @@
         }
 
         body {
-            padding-top: 5rem; /* header에 안겹치게 */
+            padding-top: 6.5rem; /* header에 안겹치게 */
+            width: 100%;
         }
 
-        menu {
-            height: 60px;
-            width: 100%;
-            position: fixed;
-            bottom: 0px;
-            background: lightcoral;
-        }
 
         search {
             padding-left: 2%;
@@ -121,24 +127,89 @@
             border-style: solid;
         }
 
+        .container {
+            width: 100%;
+            border: none;
+            padding-left: 0.7rem;
+        }
+
+        .col-8 {
+            padding-left: 0px;
+            width: 135rem;
+        }
+
+        .col-4 {
+            padding-left: 0px;
+            max-width: 100%;
+            margin-bottom: 1rem;
+        }
+
+        .card-body {
+            box-sizing: border-box;
+            width: 16rem;
+            padding-top: 0px;
+            margin-bottom: 0;
+        }
+
+        p {
+            margin-bottom: 0;
+        }
+
+        .card-title {
+            margin-bottom: 0.2rem;
+        }
+
+        #home {
+            max-height: 70%;
+            max-width: 70%;
+            position: absolute;
+            bottom: 11%;
+            left: 8%;
+        }
+
+        #library {
+            max-height: 66%;
+            max-width: 66%;
+            position: absolute;
+            bottom: 11%;
+            left: 34%;
+        }
     </style>
 </head>
+
 <body>
-<div id="cards-box" class="card-columns" style="display:none">
-    <div class="card">
-        <img class="card-img-top">
-        <div class="card-body">
-            <p class="card-title"></p>
+<div id="cards-box" class="container" style="display:none">
+    <div class="row">
+        <div class="col-4">
+            <img class="card-img">
+        </div>
+        <div class="col-8">
+            <div class="card-body">
+                <p class="card-title"></p>
+            </div>
         </div>
     </div>
 </div>
-</div>
 </body>
-<header onclick="backSpace()">← 책장
+<header>
+    <a onclick="backSpace()">← 책장</a>
 </header>
 <search class="bookSearch">
     <input id="bookName" type="text" onkeyup="enterkey()" placeholder=" 검색어를 입력하세요">
 </search>
 <menu>
+    <nav class="navbar fixed-bottom navbar-expand-sm navbar-light" style="background-color: lightcoral">
+        <a class="navbar-brand">　</a>  <!--글자에 따라서 네비바 높이가 달라져서 ㄱ+한자+9 이용-->
+        <div class="collapse navbar-nav" id="navbarCollapse">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <img src="{{ url_for('static', filename='home.png') }}" id="home" onclick="home()">
+                </li>
+                <li class="nav-item">
+                    <img src="{{ url_for('static', filename='library_none.png') }}" id="library" onclick="library()">
+                </li>
+            </ul>
+        </div>
+    </nav>
 </menu>
 </html>
