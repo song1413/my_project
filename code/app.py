@@ -8,7 +8,7 @@ import random
 
 app = Flask(__name__)
 
-client = MongoClient('localhost', 27017)
+client = MongoClient('mongodb://todaysbook:todaysbook@localhost', 27017)
 db = client.dbsparta
 
 
