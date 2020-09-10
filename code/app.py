@@ -20,7 +20,7 @@ def home():
 
 @app.route('/main')
 def main():
-    if db.books.find({}).count() == 0:
+    if db.books.count_documents({}) == 0:
         random_sentence = {'title': '책 제목', 'page': '책 페이지',
                            'content': '여기에 내용이 표시됩니다 :)'}
         return render_template('main.html', sentence=random_sentence)
