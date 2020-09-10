@@ -22,9 +22,16 @@ def home():
 def main():
     choice_book = random.choice(list(db.books.find({'sentences': {'$not': {'$size': 0}}})))  # sentences가 없는 경우는 제외
     choice_sentence = random.choice(list(choice_book['sentences']))
-    random_sentence = {'title': choice_book['title'], 'page': choice_sentence['page'],
+    if (choice_book['title'] is None):
+        random_sentence = {'title': '책 제목', 'page': '책 페이지',
+                       'content': '여기에 내용이 표시됩니다 :)'}
+    else:
+        random_sentence = {'title': choice_book['title'], 'page': choice_sentence['page'],
                        'content': choice_sentence['content']}
     return render_template('main.html', sentence=random_sentence)
+
+
+
 
 
 @app.route('/bookadd1')
