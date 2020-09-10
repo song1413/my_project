@@ -20,15 +20,15 @@ def home():
 
 @app.route('/main')
 def main():
-    if db.books.count() == 0:
+    if db.books.find({}).count() == 0:
         random_sentence = {'title': '책 제목', 'page': '책 페이지',
-                       'content': '여기에 내용이 표시됩니다 :)'}
+                           'content': '여기에 내용이 표시됩니다 :)'}
         return render_template('main.html', sentence=random_sentence)
     else:
         choice_book = random.choice(list(db.books.find({'sentences': {'$not': {'$size': 0}}})))  # sentences가 없는 경우는 제외
         choice_sentence = random.choice(list(choice_book['sentences']))
         random_sentence = {'title': choice_book['title'], 'page': choice_sentence['page'],
-                       'content': choice_sentence['content']}
+                           'content': choice_sentence['content']}
         return render_template('main.html', sentence=random_sentence)
 
 
